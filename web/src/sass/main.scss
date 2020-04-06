@@ -343,6 +343,10 @@ h3{
 .checkbox_item{
     margin-right: 20px;
 
+    @include for-pad{
+        margin: 0px 10px;
+    }
+
     .checkbox_pseudo{
         font-weight: 500;
         font-size: 16px;

@@ -33,6 +33,12 @@
 		</div>
 	</div>
 
+	<div class="content_block">
+		
+        {{ this.render('//components/generic/form.twig') | raw }}
+
+    </div>
+
 	<div class="content_block" data-listing-text-bottom>
 		<div class="seo_text" data-seo-text>
 			{{seo.text_bottom | raw }}
@@ -41,6 +47,8 @@
 			</div>
 		</div>
 	</div>
+
+
 
 	<div class="content_loading"></div>
 </div>

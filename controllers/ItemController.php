@@ -8,8 +8,9 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\Rooms;
+use common\models\elastic\ItemsElastic;
 use common\components\Breadcrumbs;
-use common\models\ItemsWidget;
+use common\models\elastic\ItemsWidgetElastic;
 
 class ItemController extends Controller
 {
@@ -17,20 +18,20 @@ class ItemController extends Controller
 	public function actionIndex($id)
 	{
 
-		$item = Rooms::find()
-			->with('restaurants')
-			->where(['id' => $id])
-			->one();
+		//ItemsElastic::refreshIndex();
+		//exit;
+
+		$item = ItemsElastic::get($id);
 
 		//$item = ApiItem::getData($item->restaurants->gorko_id);
 
 		$seo['h1'] = $item->name;
 		$seo['breadcrumbs'] = Breadcrumbs::get_breadcrumbs(2);
-		$seo['desc'] = $item->restaurants->name;
-		$seo['address'] = $item->restaurants->address;
+		$seo['desc'] = $item->restaurant_name;
+		$seo['address'] = $item->restaurant_address;
 
-		$itemsWidget = new ItemsWidget;
-		$other_rooms = $itemsWidget->getOther($item->restaurants->id, $id);
+		$itemsWidget = new ItemsWidgetElastic;
+		$other_rooms = $itemsWidget->getOther($item->restaurant_id, $id);
 
 		return $this->render('index.twig', array(
 			'item' => $item,

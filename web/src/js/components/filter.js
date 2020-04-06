@@ -59,10 +59,10 @@ export default class Filter{
 			self.reject = reject;
 			self.resolve = resolve;
 	    });		
-		
+
 		$.ajax({
             type: 'get',
-            url: '/ajax/filter',
+            url: '/ajax/filter/',
             data: data,
             success: function(response) {
             	response = $.parseJSON(response);
@@ -87,7 +87,7 @@ export default class Filter{
 
 		$.ajax({
             type: 'get',
-            url: '/ajax/filter-main',
+            url: '/ajax/filter-main/',
             data: data,
             success: function(response) {
             	if(response){

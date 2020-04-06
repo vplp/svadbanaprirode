@@ -33,7 +33,7 @@ export default class Listing{
 				$('[data-listing-text-bottom]').html(response.text_bottom);
 				$('[data-pagination-wrapper]').html(response.pagination);
 				self.block.removeClass('_loading');
-				$('html,body').animate({scrollTop:$('[data-filter-wrapper]').offset().top - 130}, 400);
+				$('html,body').animate({scrollTop:0}, 400);
 				history.pushState({}, '', '/catalog/'+response.url);
 			}
 		);

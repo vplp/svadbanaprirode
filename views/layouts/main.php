@@ -34,13 +34,14 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
                 </a>
                 <div class="header_menu">
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'v-podmoskovie')echo '_active';?>" href="/catalog/v-podmoskovie/">За городом</a>
+                    <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'v-moskve')echo '_active';?>" href="/catalog/v-moskve/">В Москве</a>
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'v-sharte')echo '_active';?>" href="/catalog/v-sharte/">В шатре</a>
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'y-vody')echo '_active';?>" href="/catalog/y-vody/">У воды</a>
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'na-verande')echo '_active';?>" href="/catalog/na-verande/">На веранде</a>
                 </div>
                 <div class="header_phone">
                     <p>(846) 205-78-45</p>
-                    <div class="header_phone_button">
+                    <div class="header_phone_button" data-open-popup-form>
                         <p class="_link">Подберите мне зал для свадьбы</p>
                     </div>
                 </div>
@@ -72,7 +73,7 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
                         <div class="footer_phone">
                             <p>Тел.: (846) 205-78-45</p>
                         </div>
-                        <div class="footer_phone_button">
+                        <div class="footer_phone_button" data-open-popup-form>
                             <p class="_link">Подберите мне зал для свадьбы</p>
                         </div>
                     </div>
@@ -80,7 +81,17 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
             </div>
         </footer>
 
-    </div> 
+    </div>
+
+    <div class="popup_wrap">
+
+        <div class="popup_layout" data-close-popup></div>
+
+        <div class="popup_form">
+            <?=$this->render('//components/generic/form.twig')?>
+        </div>
+
+    </div>
 
 <?php $this->endBody() ?>
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&display=swap&subset=cyrillic" rel="stylesheet">
