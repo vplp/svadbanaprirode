@@ -133,5 +133,29 @@
                 }
             }
         }
+
+        .item_flags{
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            padding: 10px 10px 0px 0px;
+
+            .item_flag{
+                display: flex;
+                align-items: center;
+                background: white;
+                height: 26px;
+                padding: 0px 9px 0px 25px;
+                border-radius: 3px;
+                font-size: 11px;
+
+                &._gift{
+                    background-image: url(/img/gift_icon.svg);
+                    background-position: 6px 4px;
+                    background-repeat: no-repeat;
+                    background-size: 13px;
+                }
+            }
+        }
     }
 }

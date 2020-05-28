@@ -5,9 +5,10 @@ use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use frontend\modules\svadbanaprirode\models\ElasticItems;
 use common\widgets\FilterWidget;
 use common\models\elastic\ItemsWidgetElastic;
-use common\models\Pages;
+use common\models\Seo;
 use common\models\Filter;
 use common\models\Slices;
 
@@ -20,25 +21,27 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+        $elastic_model = new ElasticItems;
+
         $filter_model = Filter::find()->with('items')->all();
         $slices_model = Slices::find()->all();
 
         $itemsWidget = new ItemsWidgetElastic;
-        $apiMain = $itemsWidget->getMain($filter_model, $slices_model, 'rooms');
+        $apiMain = $itemsWidget->getMain($filter_model, $slices_model, 'rooms', $elastic_model);
 
-        $seo = Pages::find()->where(['name' => 'index'])->one();
-        $this->setSeo($seo);
+        $seo = new Seo('index', 1, $apiMain['total']);
+        $this->setSeo($seo->seo);
 
-        //$filter = FilterWidget::widget([
-        //    'filter_active' => [],
-        //    'filter_model' => $filter_model
-        //]);
+        $filter = FilterWidget::widget([
+            'filter_active' => [],
+            'filter_model' => $filter_model
+        ]);
 
         return $this->render('index.twig', [
-            //'filter' => $filter,
+            'filter' => $filter,
             'widgets' => $apiMain['widgets'],
             'count' => $apiMain['total'],
-            'seo' => $seo,
+            'seo' => $seo->seo,
         ]);
     }
 

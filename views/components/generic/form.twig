@@ -5,10 +5,21 @@
 
 	<div class="form_main">
 
+		{% if type != 'item' %}
+
 		<div class="form_title">
 			<p class="form_title_main">Помочь с выбором зала?</p>
 			<p class="form_title_desc">Это бесплатно!</p>
 		</div>
+
+		{% else %}
+
+		<div class="form_title">
+			<p class="form_title_main">Хотите свадьбу в этом зале?</p>
+		</div>
+		
+		{% endif %}
+		
 
 		<form class="form_block" action="/ajax/form">
 
@@ -33,6 +44,8 @@
 					<div class="input_desc">необязательно</div>
 				</div>
 
+				{% if type != 'item' %}
+
 				<div class="form_checkboxes">
 					<div class="checkbox_title">Зал должен быть:</div>
 					<div class="checkbox_wrapper">
@@ -54,6 +67,8 @@
 						</div>
 					</div>
 				</div>
+
+				{% endif %}
 
 			</div>
 

@@ -8,7 +8,9 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\Rooms;
-use common\models\elastic\ItemsElastic;
+use common\models\Seo;
+use app\modules\svadbanaprirode\models\ItemSpecials;
+use frontend\modules\svadbanaprirode\models\ElasticItems;
 use common\components\Breadcrumbs;
 use common\models\elastic\ItemsWidgetElastic;
 
@@ -17,21 +19,23 @@ class ItemController extends Controller
 
 	public function actionIndex($id)
 	{
+		$elastic_model = new ElasticItems;
+		$item = $elastic_model::get($id);
 
-		//ItemsElastic::refreshIndex();
-		//exit;
+		$seo = new Seo('item', 1, 0, $item);
+		$seo = $seo->seo;
+        $this->setSeo($seo);
 
-		$item = ItemsElastic::get($id);
-
-		//$item = ApiItem::getData($item->restaurants->gorko_id);
-
-		$seo['h1'] = $item->name;
+        $seo['h1'] = $item->name;
 		$seo['breadcrumbs'] = Breadcrumbs::get_breadcrumbs(2);
-		$seo['desc'] = $item->restaurant_name;
 		$seo['address'] = $item->restaurant_address;
 
+		$special_obj = new ItemSpecials($item->restaurant_special);
+		$item->restaurant_special = $special_obj->special_arr;
+
+
 		$itemsWidget = new ItemsWidgetElastic;
-		$other_rooms = $itemsWidget->getOther($item->restaurant_id, $id);
+		$other_rooms = $itemsWidget->getOther($item->restaurant_id, $id, $elastic_model);
 
 		return $this->render('index.twig', array(
 			'item' => $item,
@@ -40,5 +44,11 @@ class ItemController extends Controller
 			'other_rooms' => $other_rooms
 		));
 	}
+
+	private function setSeo($seo){
+        $this->view->title = $seo['title'];
+        $this->view->params['desc'] = $seo['description'];
+        $this->view->params['kw'] = $seo['keywords'];
+    }
 
 }

@@ -17,6 +17,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/app.min.js',
+        'js/fotorama.js'
     ];
     public $depends = [
         //'yii\web\YiiAsset',

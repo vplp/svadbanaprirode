@@ -12,21 +12,22 @@ use frontend\widgets\PaginationWidget;
 use frontend\components\ParamsFromQuery;
 use frontend\components\QueryFromSlice;
 use frontend\components\Breadcrumbs;
-use backend\models\Pages;
 use common\models\ItemsFilter;
 use common\models\elastic\ItemsFilterElastic;
-use common\models\elastic\ItemsElastic;
+use frontend\modules\svadbanaprirode\models\ElasticItems;
 use backend\models\Filter;
 use backend\models\Slices;
 use common\models\GorkoApi;
 use common\models\GorkoApiTest;
+use common\models\Seo;
 
 class ListingController extends Controller
 {
 	protected $per_page = 24;
 
 	public $filter_model,
-		   $slices_model;
+		   $slices_model,
+		   $url;
 
 	public function beforeAction($action)
 	{
@@ -43,13 +44,19 @@ class ListingController extends Controller
 			$this->view->params['menu'] = $slice;
 			$params = $this->parseGetQuery($slice_obj->params, $this->filter_model, $this->slices_model);
 			isset($_GET['page']) ? $params['page'] = $_GET['page'] : $params['page'];
-			$this->setSeo($slice_obj->seo);
-			$slice_obj->seo['breadcrumbs'] = Breadcrumbs::get_breadcrumbs(2);
+
+			$canonical = $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['HTTP_HOST'] . explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+			if($params['page'] > 1){
+				$canonical .= $params['canonical'];
+			}			
+
 			return $this->actionListing(
 				$page 			=	$params['page'],
 				$per_page		=	$this->per_page,
 				$params_filter	= 	$params['params_filter'],
-				$seo 			=	$slice_obj->seo
+				$breadcrumbs 	=	Breadcrumbs::get_breadcrumbs(2),
+				$canonical 		= 	$canonical,
+				$type 			=	$slice
 			);
 		}
 		else{
@@ -63,32 +70,41 @@ class ListingController extends Controller
 		unset($getQuery['q']);
 		if(count($getQuery) > 0){
 			$params = $this->parseGetQuery($getQuery, $this->filter_model, $this->slices_model);
-			$seo = $params['seo'];
-			$this->setSeo($seo);
-			$seo['breadcrumbs'] = Breadcrumbs::get_breadcrumbs(1);
+			$canonical = $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['HTTP_HOST'] . explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+			if($params['page'] > 1){
+				$canonical .= $params['canonical'];
+			}
+
 			return $this->actionListing(
 				$page 			=	$params['page'],
 				$per_page		=	$this->per_page,
 				$params_filter	= 	$params['params_filter'],
-				$seo 			=	$seo
+				$breadcrumbs 	=	Breadcrumbs::get_breadcrumbs(1),
+				$canonical 		= 	$canonical
 			);	
 		}
 		else{
-			$seo = Pages::find()->where(['name' => 'listing'])->one();
-			$this->setSeo($seo);
-			$seo->breadcrumbs = Breadcrumbs::get_breadcrumbs(1);
+			$canonical = $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['HTTP_HOST'] . explode('?', $_SERVER['REQUEST_URI'], 2)[0];
+
 			return $this->actionListing(
 				$page 			=	1,
 				$per_page		=	$this->per_page,
 				$params_filter	= 	[],
-				$seo 			=	$seo
+				$breadcrumbs 	= 	Breadcrumbs::get_breadcrumbs(1),
+				$canonical 		= 	$canonical
 			);
 		}
 	}
 
-	public function actionListing($page, $per_page, $params_filter, $seo)
+	public function actionListing($page, $per_page, $params_filter, $breadcrumbs, $canonical, $type = false)
 	{
-		$items = new ItemsFilterElastic($params_filter, $per_page, $page, false, 'rooms');
+		$elastic_model = new ElasticItems;
+		$items = new ItemsFilterElastic($params_filter, $per_page, $page, false, 'rooms', $elastic_model);
+
+		if($page > 1){
+			$seo['text_top'] = '';
+			$seo['text_bottom'] = '';
+		}
 
 		$filter = FilterWidget::widget([
 			'filter_active' => $params_filter,
@@ -99,6 +115,14 @@ class ListingController extends Controller
 			'total' => $items->pages,
 			'current' => $page,
 		]);
+
+		$seo_type = $type ? $type : 'listing';
+		$seo = $this->getSeo($seo_type, $page, $items->total);
+		$seo['breadcrumbs'] = $breadcrumbs;
+		$this->setSeo($seo, $page, $canonical);
+
+		//print_r($seo);
+		//exit;
 
 		return $this->render('index.twig', array(
 			'items' => $items->items,
@@ -112,7 +136,8 @@ class ListingController extends Controller
 	public function actionAjaxFilter(){
 		$params = $this->parseGetQuery(json_decode($_GET['filter'], true), $this->filter_model, $this->slices_model);
 
-		$items = new ItemsFilterElastic($params['params_filter'], $this->per_page, $params['page'], false, 'rooms');
+		$elastic_model = new ElasticItems;
+		$items = new ItemsFilterElastic($params['params_filter'], $this->per_page, $params['page'], false, 'rooms', $elastic_model);
 
 		$pagination = PaginationWidget::widget([
 			'total' => $items->pages,
@@ -120,20 +145,28 @@ class ListingController extends Controller
 		]);
 
 		substr($params['listing_url'], 0, 1) == '?' ? $breadcrumbs = Breadcrumbs::get_breadcrumbs(1) : $breadcrumbs = Breadcrumbs::get_breadcrumbs(2);
-		$params['seo']['breadcrumbs'] = $breadcrumbs;
+		$seo_type = $params['slice_alias'] ? $params['slice_alias'] : 'listing';
+		$seo = $this->getSeo($seo_type, $params['page'], $items->total);
+		$seo['breadcrumbs'] = $breadcrumbs;
 
 		$title = $this->renderPartial('//components/generic/title.twig', array(
-			'seo' => $params['seo'],
+			'seo' => $seo,
 			'count' => $items->total
 		));
 
-		$text_top = $this->renderPartial('//components/generic/text.twig', array('text' => $params['seo']['text_top']));
-		$text_bottom = $this->renderPartial('//components/generic/text.twig', array('text' => $params['seo']['text_bottom']));		
+		if($params['page'] == 1){
+			$text_top = $this->renderPartial('//components/generic/text.twig', array('text' => $seo['text_top']));
+			$text_bottom = $this->renderPartial('//components/generic/text.twig', array('text' => $seo['text_bottom']));
+		}
+		else{
+			$text_top = '';
+			$text_bottom = '';
+		}
 
 		return  json_encode([
 			'listing' => $this->renderPartial('//components/generic/listing.twig', array(
 				'items' => $items->items,
-				'img_alt' => $params['seo']['img_alt'],
+				'img_alt' => $seo['img_alt'],
 			)),
 			'pagination' => $pagination,
 			'url' => $params['listing_url'],
@@ -164,24 +197,23 @@ class ListingController extends Controller
 		$return['params_api'] = $temp_params->params_api;
 		$return['params_filter'] = $temp_params->params_filter;
 		$return['listing_url'] = $temp_params->listing_url;
-		$return['seo'] = $temp_params->seo;
+		$return['canonical'] = $temp_params->canonical;
 		return $return;
 	}
 
-	private function setSeo($seo){
+	private function getSeo($type, $page, $count = 0){
+		$seo = new Seo($type, $page, $count);
+
+		return $seo->seo;
+	}
+
+	private function setSeo($seo, $page, $canonical){
 		$this->view->title = $seo['title'];
-        $this->view->params['desc'] = $seo['description'];
+		$this->view->params['desc'] = $seo['description'];
+		if($page != 1){
+			$this->view->params['canonical'] = $canonical;
+		}
         $this->view->params['kw'] = $seo['keywords'];
 	}
 
 }
-
-//class ListingController extends Controller
-//{
-//	public function actionIndex(){
-//		GorkoApiTest::renewAllData([
-//			'city_id=4400&type_id=1&type=11&fields=type'
-//		]);
-//		return 1;
-//	}	
-//}

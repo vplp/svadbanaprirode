@@ -1,7 +1,7 @@
 {% for item in items %}
 	<a href="/catalog/{{item.id}}/" class="item swiper-slide {{type}}">
         <div class="item_img">
-            <img src="{{item.cover_url}}" alt="{{img_alt | replace({"{название}" : item.name})}}"/>
+            <img src="{{item.images[0].subpath}}" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name})}}"/>
         </div>
         <div class="item_info">
             <div class="item_info_top">
@@ -25,9 +25,15 @@
                             <span class="item_meta_label">Вместимость: </span><span class="item_meta_text">{{item.capacity}} чел.</span>
                         </div>
                     {% endif %}
-
                 </div>
             </div>
+        </div>
+        <div class="item_flags">
+            {% if item.restaurant_commission == 2 %}
+                <div class="item_flag _gift">
+                    <p>Подарок за бронирование</p>
+                </div>
+            {% endif %}
         </div>
     </a>
 {% endfor %}

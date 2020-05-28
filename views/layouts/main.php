@@ -18,8 +18,9 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <title><?php echo $this->title ?></title>
     <?php $this->head() ?>
-    <?php if (!empty($this->params['desc'])) echo "<meta name='description' content='".$this->params['desc']."'>";?>
-    <?php if (!empty($this->params['kw'])) echo "<meta name='keywords' content='".$this->params['kw']."'>";?>
+    <?php if (isset($this->params['desc']) and !empty($this->params['desc'])) echo "<meta name='description' content='".$this->params['desc']."'>";?>
+    <?php if (isset($this->params['canonical']) and !empty($this->params['canonical'])) echo "<link rel='canonical' href='".$this->params['canonical']."'>";?>
+    <?php if (isset($this->params['kw']) and !empty($this->params['kw'])) echo "<meta name='keywords' content='".$this->params['kw']."'>";?>
     <?= Html::csrfMetaTags() ?>
 </head>
 <body>

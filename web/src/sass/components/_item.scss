@@ -4,8 +4,19 @@
     width: 100%;
     padding-left: calc(100% - 450px);
     position: relative;
-    min-height: 472px;
+    min-height: 573px;
     margin-top: 27px;
+
+    @include for-mobile{
+        padding-left: 0px;
+        min-height: auto;
+    }
+
+    @include for-pad{
+        min-height: auto;
+        padding-left: 0px;
+        align-items: center;
+    }
 }
 
 .object_gallery{
@@ -13,6 +24,48 @@
     position: absolute;
     left: 0px;
     top: 0px;
+
+    @include for-pad{
+        top: 71px;
+        left: calc(50% - 355px);
+    }
+
+    .item_top_slider{
+        margin-bottom: 5px;
+
+        @include for-mobile{
+            height: 200px;
+        }
+
+        .swiper-slide{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img{
+                @include for-mobile{
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+
+    @include for-mobile{
+        width: 100%;
+    }
+
+    .object_thumb{
+        @include for-mobile{
+            width: 75px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img{
+                max-width: 100%;
+            }
+        }
+    }
 }
 
 .object_meta{
@@ -20,12 +73,44 @@
     flex-wrap: wrap;
     width: calc(50vw - 200px);
 
+    @include for-mobile{
+        width: 100%;
+        margin-top: 275px;
+    }
+
+    @include for-pad{
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 600px;
+    }
+
     .object_meta_block{
         display: flex;
+
+        @include for-mobile{
+            flex-wrap: wrap;
+            width: 100%;
+        }
     }
 
     .object_meta_item{
         margin: 0px 34px 20px 0px;
+
+        @include for-mobile{
+            width: 100%;
+            margin: 0px 0px 10px;
+            display: flex;
+            align-items: flex-end;
+
+            .object_meta_title{
+                width: 40%;
+                min-width: 128px;
+            }
+
+            .object_meta_value{
+                width: calc(100% - 128px);
+            }
+        }
 
         &:last-child{
             margin-right: 0px;
@@ -45,6 +130,10 @@
             span{
                 font-weight: 600;
                 font-size: 24px;
+
+                @include for-mobile{
+                    font-size: 18px
+                }
             }
         }
     }
@@ -53,6 +142,15 @@
 .object_book{
     background: white;
     padding: 15px 20px 25px;
+    box-shadow: 0px 5px 20px rgba(47, 61, 2, 0.1);
+
+    @include for-mobile{
+        margin-top: 13px;
+    }
+
+    @include for-pad{
+        width: 436px;
+    }
 
     .object_book_text{
         font-weight: 500;
@@ -64,6 +162,11 @@
         margin-top: 6px;
         display: flex;
         align-items: flex-end;
+
+        @include for-mobile{
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
         &._active{
 
@@ -127,8 +230,30 @@
 
 .object_parameters{
 
+    @include for-pad{
+        width: 710px;
+        display: flex;
+        justify-content: space-between;
+    }
+
     .object_parameters_list{
         margin-top: 20px;
+
+        &._mobile{
+            display: none;
+        }
+
+        @include for-pad{
+            width: 335px;
+
+            ._mobile{
+                display: block;
+            }
+
+            &[data-mobile-hide]{
+                display: none;
+            }
+        }
 
         .object_parameters_title{
             font-weight: bold;
@@ -156,5 +281,5 @@
 }
 
 .object_description{
-
+    margin-bottom: 60px;
 }

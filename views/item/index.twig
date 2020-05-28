@@ -28,8 +28,25 @@
             </div>
 
             <div class="object_gallery" data-gallery data-id="{{item.id}}">
-                <div class="object_gallery_main" data-bigimg-wrapper>
-                    <img src="{{ item.cover_url|replace({'w445-h302-n-l95': 'w710-h472-n-l95'}) }}"/>
+                <div class="swiper-container item_top_slider">
+                    <div class="swiper-wrapper">
+                        {% for image in item.images %}
+                            <div class="swiper-slide">
+                                <a href="{{image.waterpath}}=s0" data-lightbox="top_slider"><img src="{{image.subpath}}=w710-h472-n-l95"/></a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="swiper-button-next swiper-button-white"></div>
+                    <div class="swiper-button-prev swiper-button-white"></div>
+                </div>
+                <div class="swiper-container item_thumb_slider">
+                    <div class="swiper-wrapper">
+                        {% for image in item.images %}
+                            <div class="swiper-slide object_thumb">
+                                <img src="{{image.subpath}}=w138-h92-n-l95"/>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
 
@@ -58,6 +75,14 @@
                         {% if item.restaurant_firework %}
                             <p class="object_parameters_item">Запуск фейерверка</p>
                         {% endif %}
+
+                        {% if item.restaurant_payment %}
+                            <div class="object_parameters_list _mobile">
+                                <p class="object_parameters_title">Оплата</p>
+                                <p class="object_parameters_item">{{item.restaurant_payment}}</p>
+                            </div>
+                        {% endif %}
+
                     </div>
                 {% endif %}
 
@@ -71,15 +96,14 @@
                         <p class="object_parameters_item">{{item.restaurant_parking}}</p>
                     {% endif %}
                     {% if item.restaurant_special %}
-                        {% set specials = item.restaurant_special|split(',') %}
-                        {% for special in specials %}
+                        {% for special in item.restaurant_special %}
                             <p class="object_parameters_item">{{special}}</p>
                         {% endfor %}
                     {% endif %}
                 </div>
 
                 {% if item.restaurant_payment %}
-                    <div class="object_parameters_list">
+                    <div class="object_parameters_list" data-mobile-hide>
                         <p class="object_parameters_title">Оплата</p>
                         <p class="object_parameters_item">{{item.restaurant_payment}}</p>
                     </div>
@@ -91,17 +115,20 @@
     </div>
 
     <div class="map">
-        <div id="map" data-mapDotX="{{item.restaurant_latitude}}" data-mapDotY="{{item.restaurant_longitude}}" data-balloon="" data-hint="">
+        <div id="map" data-mapDotX="{{item.restaurant_latitude}}" data-mapDotY="{{item.restaurant_longitude}}" data-balloon="{{seo.address}}" data-hint="{{seo.h1}}">
 
         </div>
     </div>
 
     <div class="content_block">
-        <div class="object_description">
 
-        </div>
+        {% if item.description != '' %}
+            <div class="object_description">
+                {{item.description}}
+            </div>
+        {% endif %}
 
-        {{ this.render('//components/generic/form.twig') | raw }}
+        {{ this.render('//components/generic/form.twig', {'type' : 'item'}) | raw }}
 
     </div>
 
