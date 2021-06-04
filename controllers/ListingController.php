@@ -121,8 +121,14 @@ class ListingController extends Controller
 		$seo['breadcrumbs'] = $breadcrumbs;
 		$this->setSeo($seo, $page, $canonical);
 
-		//print_r($seo);
-		//exit;
+		if($seo_type == 'listing' and count($params_filter) > 0){
+			$seo['text_top'] = '';
+			$seo['text_bottom'] = '';
+		}
+
+		//echo '<pre style="display:none;">';
+		//print_r($items->query);
+		//echo '</pre>';
 
 		return $this->render('index.twig', array(
 			'items' => $items->items,
@@ -145,7 +151,8 @@ class ListingController extends Controller
 		]);
 
 		substr($params['listing_url'], 0, 1) == '?' ? $breadcrumbs = Breadcrumbs::get_breadcrumbs(1) : $breadcrumbs = Breadcrumbs::get_breadcrumbs(2);
-		$seo_type = $params['slice_alias'] ? $params['slice_alias'] : 'listing';
+		$slice_url = ParamsFromQuery::isSlice(json_decode($_GET['filter'], true));
+		$seo_type = $slice_url ? $slice_url : 'listing';
 		$seo = $this->getSeo($seo_type, $params['page'], $items->total);
 		$seo['breadcrumbs'] = $breadcrumbs;
 
@@ -163,6 +170,11 @@ class ListingController extends Controller
 			$text_bottom = '';
 		}
 
+		if($seo_type == 'listing' and count($params['params_filter']) > 0){
+			$text_top = '';
+			$text_bottom = '';
+		}
+
 		return  json_encode([
 			'listing' => $this->renderPartial('//components/generic/listing.twig', array(
 				'items' => $items->items,
@@ -173,6 +185,7 @@ class ListingController extends Controller
 			'title' => $title,
 			'text_top' => $text_top,
 			'text_bottom' => $text_bottom,
+			'seo_title' => $seo['title']
 		]);
 	}
 

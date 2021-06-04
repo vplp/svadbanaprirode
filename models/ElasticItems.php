@@ -1,6 +1,8 @@
 <?php
 namespace frontend\modules\svadbanaprirode\models;
 
+
+use Yii;
 use common\models\Restaurants;
 
 class ElasticItems extends \yii\elasticsearch\ActiveRecord
@@ -29,13 +31,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'restaurant_payment',
             'restaurant_special',
             'restaurant_phone',
-            'restaurant_location_sea',
-            'restaurant_location_river',
-            'restaurant_location_lake',
-            'restaurant_location_mount',
-            'restaurant_location_city',
-            'restaurant_location_center',
-            'restaurant_location_outside',
+            'restaurant_location',
             'restaurant_commission',
             'id',
             'gorko_id',
@@ -95,13 +91,9 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     'restaurant_payment'               => ['type' => 'text'],
                     'restaurant_special'               => ['type' => 'text'],
                     'restaurant_phone'                 => ['type' => 'text'],
-                    'restaurant_location_sea'          => ['type' => 'integer'],
-                    'restaurant_location_river'        => ['type' => 'integer'],
-                    'restaurant_location_lake'         => ['type' => 'integer'],
-                    'restaurant_location_mount'        => ['type' => 'integer'],
-                    'restaurant_location_city'         => ['type' => 'integer'],
-                    'restaurant_location_center'       => ['type' => 'integer'],
-                    'restaurant_location_outside'      => ['type' => 'integer'],
+                    'restaurant_location'              => ['type' => 'nested', 'properties' =>[
+                        'id'                            => ['type' => 'integer'],
+                    ]],
                     'restaurant_commission'            => ['type' => 'integer'],
                     'id'                    => ['type' => 'integer'],
                     'gorko_id'              => ['type' => 'integer'],
@@ -181,16 +173,29 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $res = self::deleteIndex();
         $res = self::updateMapping();
         $res = self::createIndex();
+        $connection = new \yii\db\Connection([
+            'dsn'       => 'mysql:host=localhost;dbname=pmn_svadbanaprirode',
+            'username'  => 'pmnetwork',
+            'password'  => 'P2t8wdBQbczLNnVT',
+            'charset'   => 'utf8',
+        ]);
+        $connection->open();
+        Yii::$app->set('db', $connection);
         $restaurants = Restaurants::find()
             ->with('rooms')
+            ->where(['in_elastic' => 0, 'active' => 1])
             ->limit(100000)
-            ->all();
+            ->all($connection);
+        $count = 0;
         foreach ($restaurants as $restaurant) {
             foreach ($restaurant->rooms as $room) {
                 $res = self::addRecord($room, $restaurant);
+                print_r($res);
+                echo "\n";
+                $count++;
             }            
         }
-        echo 'Обновление индекса '. self::index().' '. self::type() .' завершено<br>';
+        echo 'Обновление индекса '. self::index().' '. self::type() .' завершено '.$count."\n";
     }
 
     public static function softRefreshIndex() {
@@ -228,7 +233,10 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             $record->setPrimaryKey($room->id);
         }
 
-        $record->id  = $model->id;
+        if(count($room->images) == 0)
+            return 0;
+
+        $record->id  = $room->id;
         
         $record->restaurant_id = $restaurant->id;
         $record->restaurant_gorko_id = $restaurant->gorko_id;
@@ -252,41 +260,16 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $record->restaurant_special = $restaurant->special;
         $record->restaurant_phone = $restaurant->phone;
         $record->restaurant_commission = $restaurant->commission;
-        $record->restaurant_location_sea = 0;
-        $record->restaurant_location_river = 0;
-        $record->restaurant_location_lake = 0;
-        $record->restaurant_location_mount = 0;
-        $record->restaurant_location_city = 0;
-        $record->restaurant_location_center = 0;
-        $record->restaurant_location_outside = 0;
-        $location_arr = json_decode($restaurant->location);
-        if(count($location_arr) > 0 ){
-            foreach ($location_arr as $value) {
-                switch ($value) {
-                    case 'Около реки':
-                        $record->restaurant_location_river = 1;
-                        break;
-                    case 'Около моря':
-                        $record->restaurant_location_sea = 1;
-                        break;
-                    case 'Около озера':
-                        $record->restaurant_location_lake = 1;
-                        break;
-                    case 'В горах':
-                        $record->restaurant_location_mount = 1;
-                        break;
-                    case 'В городе':
-                        $record->restaurant_location_city = 1;
-                        break;
-                    case 'В центре города':
-                        $record->restaurant_location_center = 1;
-                        break;
-                    case 'За городом':
-                        $record->restaurant_location_outside = 1;
-                        break;
-                }
-            }
-        }        
+
+        //Тип локации
+        $restaurant_location = [];
+        $restaurant_location_rest = explode(',', $restaurant->location);
+        foreach ($restaurant_location_rest as $key => $value) {
+            $restaurant_location_arr = [];
+            $restaurant_location_arr['id'] = $value;
+            array_push($restaurant_location, $restaurant_location_arr);
+        }
+        $record->restaurant_location = $restaurant_location;     
 
         $record->id = $room->id;
         $record->gorko_id = $room->gorko_id;

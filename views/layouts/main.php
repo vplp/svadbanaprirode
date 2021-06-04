@@ -12,10 +12,11 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 <head>
+	<?php //<meta name="robots" content="noindex, nofollow" />?>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/img/svadbanaprirode.ico">
     <title><?php echo $this->title ?></title>
     <?php $this->head() ?>
     <?php if (isset($this->params['desc']) and !empty($this->params['desc'])) echo "<meta name='description' content='".$this->params['desc']."'>";?>
@@ -39,9 +40,13 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'v-sharte')echo '_active';?>" href="/catalog/v-sharte/">В шатре</a>
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'y-vody')echo '_active';?>" href="/catalog/y-vody/">У воды</a>
                     <a class="header_menu_item <?if(!empty($this->params['menu']) and $this->params['menu'] == 'na-verande')echo '_active';?>" href="/catalog/na-verande/">На веранде</a>
+
+                    <div class="header_menu_item_mobile header_phone_button" data-open-popup-form>
+                        <p class="_link">Подберите мне зал для свадьбы</p>
+                    </div>
                 </div>
                 <div class="header_phone">
-                    <p>(846) 205-78-45</p>
+                    <a href="tel:+79252382671"><p>7-925-238-26-71</p></a>
                     <div class="header_phone_button" data-open-popup-form>
                         <p class="_link">Подберите мне зал для свадьбы</p>
                     </div>
@@ -67,12 +72,12 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
                         </a>
                         <div class="footer_info">
                             <p class="footer_copy">© <?php echo date("Y");?> Свадьба на природе</p>
-                            <a href="#" class="footer_pc _link">Политика конфиденциальности</a>
+                            <a href="/privacy/" target="_blank" class="footer_pc _link">Политика конфиденциальности</a>
                         </div>                        
                     </div>
                     <div class="footer_block _right">
                         <div class="footer_phone">
-                            <p>Тел.: (846) 205-78-45</p>
+                            <a href="tel:+79252382671"><p>Тел.: 7-925-238-26-71</p></a>
                         </div>
                         <div class="footer_phone_button" data-open-popup-form>
                             <p class="_link">Подберите мне зал для свадьбы</p>
@@ -95,7 +100,32 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
     </div>
 
 <?php $this->endBody() ?>
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600&display=swap&subset=cyrillic" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap&subset=cyrillic" rel="stylesheet">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(64598434, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/64598434" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-175581738-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-175581738-1');
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
 </body>
 </html>
 <?php $this->endPage() ?>

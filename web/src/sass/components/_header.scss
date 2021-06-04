@@ -9,6 +9,10 @@ header{
     box-shadow: 0px 3px 6px rgba(3, 49, 52, 0.06);
     z-index: 100;
 
+    &._active{
+        z-index: 999;
+    }
+
     @include for-pad{
         height: 90px;
     }
@@ -64,7 +68,32 @@ header{
             display: flex;
 
             @include for-notdesc{
-                display: none;
+                background: white;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                position: absolute;
+                top: 55px;
+                left: 0px;
+                padding: 10px 0px 20px;
+                width: 100%;
+                border-bottom: 1px solid #dedede;
+                box-shadow: 0 3px 6px rgba(3,49,52,.06);
+                transform: translateY(-10px);
+                opacity: 0;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                pointer-events: none;
+
+                &._active{
+                    transform: translateY(0px);
+                    opacity: 1;
+                    transition: transform 0.3s ease, opacity 0.3s ease;
+                    pointer-events: initial;
+                }
+            }
+
+            @include for-pad{
+                top: 89px;
             }
 
             .header_menu_item{
@@ -75,12 +104,26 @@ header{
                 margin: 0px 33px;
                 padding: 0px 10px;
 
+                @include for-notdesc{
+                    line-height: 40px;
+                    font-size: 18px;
+                }
+
                 &:hover{
                     color: $clrGreen;
                 }
 
                 &._active{
                     color: $clrButtonPressed;
+                }
+            }
+
+            .header_menu_item_mobile{
+                display: none;
+                margin-top: 20px;
+
+                @include for-mobile{
+                    display: block;
                 }
             }
         }
@@ -100,7 +143,7 @@ header{
                 right: 50px;
             }
 
-            & > p{
+            & > a > p{
                 font-size: 26px;
                 color: #000;
                 font-weight: 600;
@@ -112,43 +155,43 @@ header{
                     font-size: 16px;
                     line-height: 20px;
                 }
+            }            
+        }
+
+        .header_phone_button{
+            text-align: right;
+            margin-top: -2px;
+            width: fit-content;
+            cursor: pointer;
+            padding: 0px 0px 0px 30px;
+            position: relative;
+
+            @include for-mobile{
+                display: none;
             }
 
-            .header_phone_button{
+            &:after,
+            &:before{
+                content: '';
+                position: absolute;
+                top: 4px;
+                left: 0px;
+                width: 17px;
+                height: 17px;
+                border: 2px solid $clrPagination;
+                border-radius: 50%;
+            }
+
+            &:before{
+                left: 9px;
+            }
+
+            & > p{
+                display: inline;
                 text-align: right;
-                margin-top: -2px;
-                width: fit-content;
-                cursor: pointer;
-                padding: 0px 0px 0px 30px;
-                position: relative;
-
-                @include for-mobile{
-                    display: none;
-                }
-
-                &:after,
-                &:before{
-                    content: '';
-                    position: absolute;
-                    top: 4px;
-                    left: 0px;
-                    width: 17px;
-                    height: 17px;
-                    border: 2px solid $clrPagination;
-                    border-radius: 50%;
-                }
-
-                &:before{
-                    left: 9px;
-                }
-
-                & > p{
-                    display: inline;
-                    text-align: right;
-                    line-height: 25px;
-                    font-size: 16px;
-                    font-weight: 500;
-                }
+                line-height: 25px;
+                font-size: 16px;
+                font-weight: 500;
             }
         }
 
@@ -210,6 +253,26 @@ header{
 
                 @include for-mobile{
                     transform: translate(0px,16px);
+                }
+            }
+
+            &._active{
+                div:nth-child(1){
+                    transform: translate(0px,11px) rotate(45deg);
+                    @include for-mobile{
+                        transform: translate(0px,8px) rotate(45deg);
+                    }
+                }
+
+                div:nth-child(2){
+                    transform: translate(0px,11px) rotate(-45deg);
+                    @include for-mobile{
+                        transform: translate(0px,8px) rotate(-45deg);
+                    }
+                }
+
+                div:nth-child(3){
+                    transform: translate(0px,30px);
                 }
             }
         }

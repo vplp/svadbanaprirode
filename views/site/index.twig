@@ -16,6 +16,21 @@
 		{{filter | raw }}
 	</div>
 
+	<div class="filter_mobile_flag"></div>
+	<div class="filter_mobile_wrapper">
+		<div class="filter_mobile_button _button" data-filter-open>Показать фильтр</div>
+	</div>
+
+	<div class="map_container">
+		<div class="map_placeholder" data-show-map>
+			<div class="map_placeholder_show">
+				<img src="/img/svadbanaprirode/map_icon.svg"/>
+				<p>Развернуть карту</p>
+			</div>
+		</div>
+		<div class="map"></div>
+	</div>	
+
 	{% for widget in widgets %}
 		<div data-widget-wrapper>
 			<div class="listing_widget_header">
@@ -37,6 +52,11 @@
 					<div class="listing_widget_arrow _next"></div>
 				</div>					
 			</div>
+
+			<a href="/catalog/{{widget.slice.alias}}/" class="main_widget_link _button">
+				{{widget.link_text}}
+			</a>
+
 			<div class="listing_widget_footer">
 				<div class="seo_text" data-seo-text>
 					{{widget.text | raw }}

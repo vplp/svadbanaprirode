@@ -6,7 +6,8 @@ import Main from './components/main';
 import Index from './components/index';
 import Widget from './components/widget';
 import Form from './components/form';
-import YaMap from './components/map';
+import YaMap from './components/mapSingleObject';
+import Errorpage from './components/error';
 
 window.$ = $;
 
@@ -30,8 +31,15 @@ window.$ = $;
 	    }
 
 	    if ($('.map').length > 0) {
-	    	var yaMap = new YaMap();
+			if($('[data-page-type="item"]').length > 0) {
+				var yaMap = new YaMap();
+			}
+		}
+
+	    if ($('[data-page-type="error"]').length > 0) {
+	    	var error = new Errorpage();
 	    }
+	    
 
 	    var main = new Main();
 	    var form = [];

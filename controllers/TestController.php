@@ -8,17 +8,35 @@ use yii\web\Controller;
 
 class TestController extends Controller
 {
+	public function actionSendmessange()
+	{
+		$to = ['zadrotstvo@gmail.com'];
+		$subj = "Тестовая заявка";
+		$msg = "Тестовая заявка";
+		$message = $this->sendMail($to,$subj,$msg);
+		var_dump($message);
+		exit;
+	}
+
 	public function actionIndex()
 	{
+		print_r(Yii::$app->db->dsn);
+		exit;
 		GorkoApiTest::renewAllData([
-			'city_id=4400&fields=params'
+			[
+				'params' => 'city_id=4400&type_id=1&type=30,11,17,14',
+				'watermark' => '/var/www/pmnetwork/pmnetwork/frontend/web/img/watermark.png'
+			]			
 		]);
 	}
 
 	public function actionTest()
 	{
 		GorkoApiTest::showOne([
-			'city_id=4400&fields=params'
+			[
+				'params' => 'city_id=4400&type_id=1&type=30,11,17,14',
+				'watermark' => '/var/www/pmnetwork/pmnetwork/frontend/web/img/watermark.png'
+			]
 		]);
 	}
 
@@ -28,6 +46,11 @@ class TestController extends Controller
 	}
 
 	public function actionSoftrenewelastic()
+	{
+		ElasticItems::softRefreshIndex();
+	}
+
+	public function actionCreateindex()
 	{
 		ElasticItems::softRefreshIndex();
 	}
@@ -70,4 +93,22 @@ class TestController extends Controller
 
 	    
 	}
+
+	private function sendMail($to,$subj,$msg) {
+        $message = Yii::$app->mailer->compose()
+            ->setFrom(['svadbanaprirode@yandex.ru' => 'Свадьба на природе'])
+            ->setTo($to)
+            ->setSubject($subj)
+            //->setTextBody('Plain text content')
+            ->setHtmlBody($msg);
+        //echo '<pre>';
+        //print_r($message);
+        //exit;
+        if (count($_FILES) > 0) {
+            foreach ($_FILES['files']['tmp_name'] as $k => $v) {
+                $message->attach($v, ['fileName' => $_FILES['files']['name'][$k]]);
+            }
+        }
+        return $message->send();
+    }
 }

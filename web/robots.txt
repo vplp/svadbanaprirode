@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: *district_code=*
+Disallow: *gostey=*
+Disallow: *area_type=*
+Disallow: *y-vody=*
+Disallow: *chek=*
+Disallow: *na-kryshe=*
+Disallow: *?keyword=*
+Sitemap:  https://svadbanaprirode.com/sitemap/

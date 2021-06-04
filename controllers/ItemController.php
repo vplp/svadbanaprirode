@@ -22,6 +22,9 @@ class ItemController extends Controller
 		$elastic_model = new ElasticItems;
 		$item = $elastic_model::get($id);
 
+		if(!$item)
+			throw new \yii\web\NotFoundHttpException();
+
 		$seo = new Seo('item', 1, 0, $item);
 		$seo = $seo->seo;
         $this->setSeo($seo);
@@ -29,6 +32,7 @@ class ItemController extends Controller
         $seo['h1'] = $item->name;
 		$seo['breadcrumbs'] = Breadcrumbs::get_breadcrumbs(2);
 		$seo['address'] = $item->restaurant_address;
+		$seo['desc'] = $item->restaurant_name;
 
 		$special_obj = new ItemSpecials($item->restaurant_special);
 		$item->restaurant_special = $special_obj->special_arr;
@@ -36,12 +40,14 @@ class ItemController extends Controller
 
 		$itemsWidget = new ItemsWidgetElastic;
 		$other_rooms = $itemsWidget->getOther($item->restaurant_id, $id, $elastic_model);
+		$similar_rooms = $itemsWidget->getSimilar($item, 'rooms', $elastic_model);
 
 		return $this->render('index.twig', array(
 			'item' => $item,
 			'queue_id' => $id,
 			'seo' => $seo,
-			'other_rooms' => $other_rooms
+			'other_rooms' => $other_rooms,
+			'similar_rooms' => $similar_rooms
 		));
 	}
 

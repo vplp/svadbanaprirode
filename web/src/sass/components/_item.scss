@@ -1,3 +1,32 @@
+.item_title{
+    h1{
+        span:nth-of-type(1){
+            display: block;
+            font-weight: bold;
+            line-height: 44px;
+            font-size: 38px;
+            letter-spacing: 0.01em;
+
+            @include for-mobile{
+                font-weight: bold;
+                font-size: 32px;
+                line-height: 36px;
+            }
+        }
+
+        span:nth-of-type(2){
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            margin-top: 5px;
+            text-align: center;
+            font-size: 26px;
+            line-height: 32px;
+            font-weight: normal;
+        }
+    }
+}
+
 .object_head{
     display: flex;
     flex-direction: column;
@@ -226,6 +255,13 @@
         background-repeat: no-repeat;
         min-height: 37px;
     }
+
+    .object_book_button{
+        width: fit-content;
+        text-align: center;
+        line-height: 40px;
+        margin-top: 12px;
+    }
 }
 
 .object_parameters{
@@ -282,4 +318,76 @@
 
 .object_description{
     margin-bottom: 60px;
+}
+
+[data-page-type="item"] .items_list_listing.swiper-container .items_list{
+    justify-content: center;
+
+    @media (max-width: 1650px) {
+        justify-content: initial;
+    }
+}
+
+.object_book_email{
+    margin-top: 8px;
+
+    &._form{
+
+        .object_book_email_text,
+        .object_book_email_success{
+            display: none;
+        }
+
+        .object_book_email_form{
+            display: block;
+        }
+    }
+
+    &._success{
+
+        .object_book_email_text,
+        .object_book_email_form{
+            display: none;
+        }
+
+        .object_book_email_success{
+            display: block;
+        }
+    }
+
+    .object_book_email_text{
+
+    }
+
+    .object_book_email_form{
+        display: none;
+        margin-top: 13px;
+        justify-content: space-between;
+
+        .form_block{
+            margin-top: 0px;
+        }
+
+        .input_wrapper{
+            width: calc(100% - 8px);
+        }
+
+        .object_book_email_button{
+            width: calc(40% - 8px);
+            line-height: 40px;
+            text-align: center;
+        }
+    }
+
+    .object_book_email_success{
+        display: none;
+
+        .object_book_email_success_text{
+
+        }
+
+        .object_book_email_success_reload{
+
+        }
+    }
 }

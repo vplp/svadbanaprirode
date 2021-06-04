@@ -7,8 +7,8 @@ var animation = new Animation;
 export default class Form {
 	constructor(form) {
 		this.$form = $(form);
-		this.$formWrap = this.$form.parents('.formWrap');
-		this.$submitButton = this.$form.find('button[type="submit"]');
+		this.$formWrap = this.$form.parents('.form_wrapper');
+		this.$submitButton = this.$form.find('input[type="submit"]');
 		this.$policy = this.$form.find('[name="policy"]');
 		this.to = (this.$form.attr('action') == undefined || this.$form.attr('action') == '') ? this.to : this.$form.attr('action');
 		let im_phone = new Inputmask('+7 (999) 999-99-99', {
@@ -64,12 +64,32 @@ export default class Form {
 			this.checkValid();
 		})
 
-		$('[data-action="form_checkbox"]').on('click',(e) => {
+		this.$form.find('[data-action="form_checkbox"]').on('click',(e) => {
 			let $el = $(e.currentTarget);
 			let $input = $el.siblings('input');
 
 			$input.prop("checked", !$input.prop("checked"));
+			$el.closest('.checkbox_item').toggleClass('_active');
 		})
+
+		this.$formWrap.find('[data-success] [data-success-close]').on('click', (e) => {
+			this.$formWrap.find('[data-success]').removeClass('_active');
+		});
+
+		this.$form.find('[data-form-privacy]').on('click', (e) => {
+			let $el = $(e.currentTarget);
+
+			if(!$(e.target).hasClass('_link')){
+				$el.toggleClass('_active');
+
+				if($el.hasClass('_active')){
+					this.$submitButton.removeClass('disabled');
+				}
+				else{
+					this.$submitButton.addClass('disabled');
+				}
+			}
+		});
 	}
 
 	checkValid() {
@@ -144,12 +164,33 @@ export default class Form {
 	}
 
 	beforeSend() {
-		// this.$submitButton.addClass('button__pending');
+		this.$submitButton.addClass('disabled');
 	}
 
-	success(data) {
+	success(data, formType) {
 		//modal.append(data);
 		//modal.show();
+		switch(formType) {
+		  case 'main':
+		    ym(64598434,'reachGoal','form_main');
+		    gtag('event', 'form');
+		    break;
+
+		  case 'item':
+		    ym(64598434,'reachGoal','form_room');
+		    gtag('event', 'form');
+		    break;
+
+		  case 'book':
+		    $('.object_book_email._form').removeClass('_form').addClass('_success');
+		    break;
+		}
+		let dataObj = JSON.parse(JSON.parse(data));
+		console.log(dataObj);
+		this.$formWrap.find('[data-success] [data-success-name]').text(dataObj.payload.name);
+		this.$formWrap.find('[data-success] [data-success-phone]').text(dataObj.payload.phone);
+		this.$formWrap.find('[data-success]').addClass('_active');
+
 		this.reset();
 		// this.$submitButton.removeClass('button__pending');
 	}
@@ -160,33 +201,42 @@ export default class Form {
 	}
 
 	sendIfValid(e) {
+		var self = this;
 	    e.preventDefault();
 	    if (!this.checkFields()) return;
-	    if (this.disabled) return;
-
-	    this.disabled = true;
-	    this.beforeSend();
+	    if (this.disabled) return;	    
 
 	    var formData = new FormData(this.$form[0]);
+
+	    var formType = this.$form.data('type');
+	    formData.append('type', formType);
+	    var formUrl = window.location.href;
+	    formData.append('url', formUrl);
 
 	    for (var pair of formData.entries()) {
 		    console.log(pair[0]+ ', ' + pair[1]); 
 		}
 
-	    fetch(this.to,{
-			method: 'POST',
-			body: formData
-	    })
-	    .then(status)
-	    .then(json)
-	    .then(data => {
-			this.success(data);
-			// this.reset();
-			this.disabled = false;
-	    })
-	    .catch(() => {
-			this.error();
-			this.disabled = false;
-	    });
+	    $.ajax({
+            beforeSend: function() {
+            	self.disabled = true;
+                self.beforeSend();
+            },
+            type: "POST",
+            url: self.to,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+            	self.$submitButton.removeClass('disabled');
+            	self.success(response, formType);
+            	self.disabled = false;
+            },
+            error: function(response) {
+            	self.$submitButton.removeClass('disabled');
+                self.error(response, formType);
+                self.disabled = false;
+            }
+        });
 	}
 }

@@ -45,6 +45,32 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionError()
+    {
+        $elastic_model = new ElasticItems;
+
+        $filter_model = Filter::find()->with('items')->all();
+        $slices_model = Slices::find()->all();
+
+        $itemsWidget = new ItemsWidgetElastic;
+        $apiMain = $itemsWidget->getMain($filter_model, $slices_model, 'rooms', $elastic_model);
+
+        $seo = new Seo('error', 1, 0);
+        $this->setSeo($seo->seo);
+
+        $filter = FilterWidget::widget([
+            'filter_active' => [],
+            'filter_model' => $filter_model
+        ]);
+
+        return $this->render('error.twig', [
+            'filter' => $filter,
+            'widgets' => $apiMain['widgets'],
+            'count' => $apiMain['total'],
+            'seo' => $seo->seo,
+        ]);
+    }
+
     private function setSeo($seo){
         $this->view->title = $seo['title'];
         $this->view->params['desc'] = $seo['description'];

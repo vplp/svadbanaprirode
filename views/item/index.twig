@@ -10,7 +10,7 @@
             <div class="object_meta">
                 <div class="object_meta_item">
                     <p class="object_meta_title">Банкетное меню</p>
-                    <p class="object_meta_value">от <span>{{item.price}} ₽</span></p>
+                    <p class="object_meta_value">от <span class="rur">{{item.price}} <span class="norur">руб.</span></span></p>
                 </div>
                 <div class="object_meta_block">
                     <div class="object_meta_item">
@@ -32,7 +32,7 @@
                     <div class="swiper-wrapper">
                         {% for image in item.images %}
                             <div class="swiper-slide">
-                                <a href="{{image.waterpath}}=s0" data-lightbox="top_slider"><img src="{{image.subpath}}=w710-h472-n-l95"/></a>
+                                <a href="{{image.waterpath}}=s0" data-lightbox="top_slider"><img src="{{image.subpath}}=w710-h472-n-l95" alt="Фото №{{loop.index}} зала {{item.name}}"/></a>
                             </div>
                         {% endfor %}
                     </div>
@@ -43,7 +43,7 @@
                     <div class="swiper-wrapper">
                         {% for image in item.images %}
                             <div class="swiper-slide object_thumb">
-                                <img src="{{image.subpath}}=w138-h92-n-l95"/>
+                                <img src="{{image.subpath}}=w138-h92-n-l95" alt="Фото №{{loop.index}} зала {{item.name}}"/>
                             </div>
                         {% endfor %}
                     </div>
@@ -57,9 +57,32 @@
                         <span class="object_fake_phone">+7 xxx xxx-xx-xx</span>
                         <a href="tel:{{item.restaurant_phone}}" class="object_real_phone">{{item.restaurant_phone}}</a>
                     </p>
-                    <div class="object_book_hidden_button" data-action="show_phone">Показать номер</div>
+                    <div class="object_book_hidden_button" data-action="show_phone" data-commission="{{item.restaurant_commission}}">Показать номер</div>
                 </div>
-                {#<p class="object_book_action">Забронируй Зал «Екатерининский» до 1 сентября 2019 и получи приятный подарок!</p>#}
+                <div class="object_book_email">
+                    <div class="object_book_email_text" data-book-open>
+                        <p class="_pseudolink">Отправить инфо о зале себе на эл. почту</p>
+                    </div>
+                    <div class="object_book_email_form">
+                        <form class="form_block" action="/ajax/sendroom/" data-type="book">
+                            <div class="form_inputs">
+                                <div class="input_wrapper">
+                                    <input type="email" name="book_email" data-book-email-id="{{item.id}}">
+                                    <input type="hidden" name="room_id" value="{{item.id}}">
+                                </div>
+                            </div>
+                            <input type="submit" class="object_book_email_button _button" value="Отправить"/>
+                        </form>
+                    </div>
+                    <div class="object_book_email_success">
+                        <p class="object_book_email_success_text">Мы отправили информацию на почту</p>
+                        <p class="object_book_email_success_reload _pseudolink" data-book-email-reload>Отправить еще раз</p>
+                    </div>
+                </div>
+                {% if item.restaurant_commission %}
+                    <p class="object_book_action">Забронируй {{item.name}} и получи приятный подарок!</p>
+                {% endif %}
+                <div class="object_book_button _button" data-book-button>Оставить заявку на зал</div>
             </div>
 
             <div class="object_parameters">
@@ -128,13 +151,13 @@
             </div>
         {% endif %}
 
-        {{ this.render('//components/generic/form.twig', {'type' : 'item'}) | raw }}
+        {{ this.render('//components/generic/form.twig', {'type' : 'item', 'venue_id': item.restaurant_gorko_id, 'room_name':item.name}) | raw }}
 
     </div>
 
-    {{ this.render('//components/generic/other_widjet.twig', {'items':other_rooms, 'restaurant_name':item.restaurant_name}) | raw }}
+    {{ this.render('//components/generic/other_widjet.twig', {'items':other_rooms, 'restaurant_name':item.restaurant_name, 'room_name':item.name}) | raw }}
 
-    {{similar_rooms | raw }}
+    {{ this.render('//components/generic/similar_rooms.twig', {'items':similar_rooms}) | raw }}
 
 </div>
 

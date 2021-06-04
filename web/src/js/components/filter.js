@@ -27,12 +27,39 @@ export default class Filter{
 			self.checkboxStateRefresh($(this));
 		});
 
+		//ОТКРЫТЬ МОБИЛЬНЫЙ ФИЛЬТР
+		$('body').find('[data-filter-open]').on('click', (e) => {
+			this.$filter.addClass('_active');
+		});
+
+		//ЗАКРЫТЬ МОБИЛЬНЫЙ ФИЛЬТР
+		this.$filter.find('[data-filter-close]').on('click', (e) => {
+			this.$filter.removeClass('_active');
+		});
+		this.$filter.on('click', function(e){
+			if(!$(e.target).hasClass('filter_mobile_button') && !$(e.target).hasClass('filter_wrapper') && !$(e.target).closest('.filter_wrapper').length)
+				if(self.$filter.hasClass('_active'))
+					self.filterClose();
+		});
+
 		//КЛИК ВНЕ БЛОКА С СЕЛЕКТОМ
 		$('body').click(function(e) {
 		    if (!$(e.target).closest('.filter_select_block').length){
 		    	self.selectBlockActiveClose();
 		    }
 		});
+
+		var observer = new IntersectionObserver(function(entries) {
+			console.log(entries[0].intersectionRatio);
+		  	if (entries[0].intersectionRatio === 0)
+		    	document.querySelector(".filter_mobile_wrapper").classList.add("_sticky");
+		  	else if (entries[0].intersectionRatio === 1)
+		    	document.querySelector(".filter_mobile_wrapper").classList.remove("_sticky");
+		}, {
+		  	threshold: [0, 1]
+		});
+
+		observer.observe(document.querySelector(".filter_mobile_flag"));
 	}
 
 	init(){
@@ -45,6 +72,10 @@ export default class Filter{
 		this.$filter.find('[data-filter-checkbox-item]').each(function(){
 			self.checkboxStateRefresh($(this));
 		});
+	}
+
+	filterClose(){
+		this.$filter.removeClass('_active');
 	}
 
 	filterListingSubmit(page = 1){

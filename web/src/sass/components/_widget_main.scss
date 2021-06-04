@@ -54,10 +54,24 @@
 	}
 }
 
+.error_widget{
+
+	.listing_widget_link{
+
+		@include for-notdesc{
+	    	display: flex !important;
+	    }
+	}
+}
+
 .listing_widget_link{
 	display: flex;
 	justify-content: center;
 	align-items: center;
+
+	@include for-notdesc{
+    	display: none !important;
+    }
 
 	.listing_widget_link_img{
 		width: 122px;
@@ -142,4 +156,30 @@
 		    }
 		}
 	}		
+}
+
+
+.main_widget_link{
+    display: none;
+    line-height: 40px;
+    text-align: center;
+    width: calc(100% - 30px);
+    margin-left: 15px;
+    margin-top: 20px;
+
+    @include for-mobile{
+        display: block;
+    }
+
+    @include for-pad{
+    	display: block;
+    	width: 280px;
+    	margin: 20px auto 0px;
+    }
+}
+
+.error_widget{
+	.listing_widget_link{
+		height: 430px;
+	}
 }

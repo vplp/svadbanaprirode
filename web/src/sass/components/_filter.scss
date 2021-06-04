@@ -1,30 +1,72 @@
 .filter{
-    display: flex;
-    padding: 38px 17px 35px;
-    background-color: white;
-    align-items: center;
     margin-top: 40px;
-    box-shadow: $shadowCard;
 
-    @include for-notdesc{
-        flex-wrap: wrap;
-    }
-
-    @include for-pad{
-        padding: 38px 17px 25px;
-
-        &>div:nth-child(-n+3){
-            margin-bottom: 40px;
-        }
-
-        &>div:nth-child(3n){
-            margin-right: 0px;
-        }
+    @include for-mobile{
+        margin-top: 25px;
     }
 
     @include for-mobile{
-        padding: 0px 17px 25px;
-        margin-top: 25px;
+        &._active{
+            display: flex;
+            position: fixed;
+            z-index: 999;
+            height: 100%;
+            width: 100%;
+            top: 0px;
+            left: 0px;
+            margin: 0px;
+            justify-content: center;
+            align-items: center;
+            background-color: #33333333;
+
+            .filter_wrapper{
+                display: flex;
+                width: 100%;
+                position: relative;
+                padding: 25px 17px;
+
+                .form_close{
+                    display: block;
+                }
+            }
+
+            .filter_mobile_button{
+                display: none;
+            }
+        }
+    }
+
+    .filter_wrapper{
+        display: flex;
+        padding: 38px 17px 35px;
+        background-color: white;
+        align-items: center;
+        box-shadow: $shadowCard;
+
+        @include for-mobile{
+            display: none;
+        }
+
+        @include for-notdesc{
+            flex-wrap: wrap;
+        }
+
+        @include for-pad{
+            padding: 38px 17px 25px;
+
+            &>div:nth-child(-n+3){
+                margin-bottom: 40px;
+            }
+
+            &>div:nth-child(3n){
+                margin-right: 0px;
+            }
+        }
+
+        @include for-mobile{
+            padding: 0px 17px 25px;
+            
+        }
     }
 
     .filter_label{
@@ -215,4 +257,38 @@
             text-align: center;
         }
     }
+}
+
+.filter_mobile_wrapper{
+    position: sticky;
+    top: 55px;
+    padding: 5px 15px 5px;
+    z-index: 998;
+    display:none;
+
+    @include for-mobile{
+        display: block;
+    }
+
+    &._sticky{
+        border-bottom: 1px solid #dedede;
+        box-shadow: 0 3px 6px rgba(3,49,52,.06);
+        top: 55px;
+        background: white;
+    }
+
+    .filter_mobile_button{
+        display: none;
+        line-height: 40px;
+        text-align: center;
+
+        @include for-mobile{
+            display: block;
+        }
+    }
+}
+
+.filter_mobile_flag{
+    min-width: 1px;
+    min-height: 1px;
 }
