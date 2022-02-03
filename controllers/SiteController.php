@@ -11,6 +11,10 @@ use common\models\elastic\ItemsWidgetElastic;
 use common\models\Seo;
 use common\models\Filter;
 use common\models\Slices;
+use common\models\RoomsModule;
+use common\models\RoomsUniqueId;
+use backend\models\Pages;
+use common\models\siteobject\SiteObjectSeo;
 
 class SiteController extends Controller
 {
@@ -21,6 +25,14 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+       //$rooms_mod = RoomsModule::find()->all();
+       //foreach ($rooms_mod as $key => $value) {
+       //    $room_uid = new RoomsUniqueId();
+       //    $room_uid->id = $value->id;
+       //    $room_uid->unique_id = $value->unique_id;
+       //    $room_uid->save();
+       //}
+
         $elastic_model = new ElasticItems;
 
         $filter_model = Filter::find()->with('items')->all();

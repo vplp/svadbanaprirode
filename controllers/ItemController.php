@@ -20,10 +20,15 @@ class ItemController extends Controller
 	public function actionIndex($id)
 	{
 		$elastic_model = new ElasticItems;
-		$item = $elastic_model::get($id);
+		$item = $elastic_model::find()
+		->query(['bool' => ['must' => ['match'=>['unique_id' => $id]]]])
+		->limit(1)
+		->search();
 
-		if(!$item)
+		if(!isset($item['hits']['hits'][0]))
 			throw new \yii\web\NotFoundHttpException();
+
+		$item = $item['hits']['hits'][0];		
 
 		$seo = new Seo('item', 1, 0, $item);
 		$seo = $seo->seo;

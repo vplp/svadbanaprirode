@@ -1,9 +1,9 @@
 {% for item in items %}
-	<a href="/catalog/{{item.id}}/" class="item swiper-slide {{type}}" data-location="{{item.restaurant_location[0].id}}">
+	<a href="/catalog/{{item.unique_id}}/" class="item swiper-slide {{type}}" data-location="{{item.restaurant_location[0].id}}">
         <div class="item_img">
-            <img src="{{item.images[0].subpath}}" loading="lazy" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name}) | replace({"**room_name**" : item.name}) }}"/>
+            <img src="{{item.images[0].subpath}}=rw" loading="lazy" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name}) | replace({"**room_name**" : item.name}) }}"/>
             {% if item.images[1] %}
-                <img class="item_img_subimg" loading="lazy" src="{{item.images[1].subpath}}" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name}) | replace({"**room_name**" : item.name}) }} 2"/>
+                <img class="item_img_subimg" loading="lazy" src="{{item.images[1].subpath}}=rw" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name}) | replace({"**room_name**" : item.name}) }} 2"/>
             {% endif %}
         </div>
         <div class="item_info">

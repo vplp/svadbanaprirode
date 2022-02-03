@@ -8,6 +8,7 @@ import Widget from './components/widget';
 import Form from './components/form';
 import YaMap from './components/mapSingleObject';
 import Errorpage from './components/error';
+import Post from './components/post';
 
 window.$ = $;
 
@@ -38,6 +39,10 @@ window.$ = $;
 
 	    if ($('[data-page-type="error"]').length > 0) {
 	    	var error = new Errorpage();
+	    }
+
+	    if ($('[data-page-type="post"]').length > 0) {
+	    	var post = new Post();
 	    }
 	    
 

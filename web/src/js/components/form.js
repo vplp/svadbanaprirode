@@ -90,6 +90,16 @@ export default class Form {
 				}
 			}
 		});
+
+		this.$form.find('[name="count"]').on('input', function() {
+			var guestsNumber = /^[0-9]+$/;
+
+			if ( $(this).val().match(guestsNumber)) {
+				$(this).removeClass('_invalid');
+			} else {
+				$(this).addClass('_invalid');
+			}
+		});
 	}
 
 	checkValid() {
@@ -185,7 +195,7 @@ export default class Form {
 		    $('.object_book_email._form').removeClass('_form').addClass('_success');
 		    break;
 		}
-		let dataObj = JSON.parse(JSON.parse(data));
+		let dataObj = data;
 		console.log(dataObj);
 		this.$formWrap.find('[data-success] [data-success-name]').text(dataObj.payload.name);
 		this.$formWrap.find('[data-success] [data-success-phone]').text(dataObj.payload.phone);

@@ -1,0 +1,63 @@
+<div class="restaurant_adv_wrapper">
+
+  <div class="object_head">
+
+            <div class="object_meta">
+                <div class="object_meta_item">
+                    <p class="object_meta_title">Банкетное меню</p>
+                    <p class="object_meta_value">от <span class="rur">{{item.price}} <span class="norur">руб.</span></span></p>
+                </div>
+                <div class="object_meta_block">
+                    <div class="object_meta_item">
+                        <p class="object_meta_title">Вместимость на банкет:</p>
+                        <p class="object_meta_value">до <span>{{item.capacity}} персон</span></p>
+                    </div>
+
+                    {% if item.capacity_reception %}
+                        <div class="object_meta_item">
+                            <p class="object_meta_title">на фуршет:</p>
+                            <p class="object_meta_value">до <span>{{item.capacity_reception}} персон</span></p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="object_gallery" data-gallery data-id="{{item.id}}">
+                <div class="swiper-container item_top_slider">
+                    <div class="swiper-wrapper">
+                        {% for image in item.images %}
+                            <div class="swiper-slide">
+                                <a href="{{image.waterpath}}=s0" data-lightbox="top_slider"><img src="{{image.subpath}}=w710-h472-n-l95" alt="Фото №{{loop.index}} зала {{item.name}}"/></a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="swiper-button-next swiper-button-white"></div>
+                    <div class="swiper-button-prev swiper-button-white"></div>
+                </div>
+                <div class="swiper-container item_thumb_slider">
+                    <div class="swiper-wrapper">
+                        {% for image in item.images %}
+                            <div class="swiper-slide object_thumb">
+                                <img src="{{image.subpath}}=w138-h92-n-l95" alt="Фото №{{loop.index}} зала {{item.name}}"/>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="object_book">
+                <p class="object_book_text">Узнать об актуальных акциях и забронировать можно по телефону:</p>
+                <div class="object_book_hidden">
+                    <p class="object_book_phone">
+                        <span class="object_fake_phone">+7 xxx xxx-xx-xx</span>
+                        <a href="tel:{{item.restaurant_phone}}" class="object_real_phone">{{item.restaurant_phone}}</a>
+                    </p>
+                    <div class="object_book_hidden_button" data-action="show_phone" data-commission="{{item.restaurant_commission}}">Показать номер</div>
+                </div>
+                {% if item.restaurant_commission %}
+                    <p class="object_book_action">Забронируй {{item.name}} и получи приятный подарок!</p>
+                {% endif %}
+                <a href="/catalog/{{item.unique_id}}/"><div class="object_book_button _button" data-book-button>Посмотреть зал</div></a>
+            </div>
+
+</div>

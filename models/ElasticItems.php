@@ -1,9 +1,18 @@
 <?php
 namespace frontend\modules\svadbanaprirode\models;
 
-
 use Yii;
 use common\models\Restaurants;
+use common\models\RestaurantsTypes;
+use yii\helpers\ArrayHelper;
+use common\models\Subdomen;
+use common\models\RoomsUniqueId;
+use common\models\RestaurantsSpec;
+use common\models\RestaurantsSpecial;
+use common\models\RestaurantsExtra;
+use common\models\RestaurantsLocation;
+use common\models\ImagesModule;
+use common\components\AsyncRenewImages;
 
 class ElasticItems extends \yii\elasticsearch\ActiveRecord
 {
@@ -49,7 +58,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'features',
             'cover_url',
             'images',
-            'thumbs',
+            'unique_id',
             'description'
         ];
     }
@@ -92,41 +101,34 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     'restaurant_special'               => ['type' => 'text'],
                     'restaurant_phone'                 => ['type' => 'text'],
                     'restaurant_location'              => ['type' => 'nested', 'properties' =>[
-                        'id'                            => ['type' => 'integer'],
+                        'id'                                => ['type' => 'integer'],
                     ]],
+                    'unique_id'                        => ['type' => 'integer'],
                     'restaurant_commission'            => ['type' => 'integer'],
-                    'id'                    => ['type' => 'integer'],
-                    'gorko_id'              => ['type' => 'integer'],
-                    'restaurant_id'         => ['type' => 'integer'],
-                    'price'                 => ['type' => 'integer'],
-                    'capacity_reception'    => ['type' => 'integer'],
-                    'capacity'              => ['type' => 'integer'],
-                    'type'                  => ['type' => 'integer'],
-                    'rent_only'             => ['type' => 'integer'],
-                    'banquet_price'         => ['type' => 'integer'],
-                    'bright_room'           => ['type' => 'integer'],
-                    'separate_entrance'     => ['type' => 'integer'],
-                    'type_name'             => ['type' => 'text'],
-                    'name'                  => ['type' => 'text'],
-                    'features'              => ['type' => 'text'],
-                    'cover_url'             => ['type' => 'text'],
-                    'description'           => ['type' => 'text'],
-                    'images'                => ['type' => 'nested', 'properties' =>[
-                        'id'                => ['type' => 'integer'],
-                        'sort'              => ['type' => 'integer'],
-                        'realpath'          => ['type' => 'text'],
-                        'subpath'           => ['type' => 'text'],
-                        'waterpath'         => ['type' => 'text'],
-                        'timestamp'         => ['type' => 'text'],
-                    ]],
-                    'thumbs'                => ['type' => 'nested', 'properties' =>[
-                        'id'                => ['type' => 'integer'],
-                        'sort'              => ['type' => 'integer'],
-                        'realpath'          => ['type' => 'text'],
-                        'subpath'           => ['type' => 'text'],
-                        'waterpath'         => ['type' => 'text'],
-                        'timestamp'         => ['type' => 'text'],
-                    ]],
+                    'id'                               => ['type' => 'integer'],
+                    'gorko_id'                         => ['type' => 'integer'],
+                    'restaurant_id'                    => ['type' => 'integer'],
+                    'price'                            => ['type' => 'integer'],
+                    'capacity_reception'               => ['type' => 'integer'],
+                    'capacity'                         => ['type' => 'integer'],
+                    'type'                             => ['type' => 'integer'],
+                    'rent_only'                        => ['type' => 'integer'],
+                    'banquet_price'                    => ['type' => 'integer'],
+                    'bright_room'                      => ['type' => 'integer'],
+                    'separate_entrance'                => ['type' => 'integer'],
+                    'type_name'                        => ['type' => 'text'],
+                    'name'                             => ['type' => 'text'],
+                    'features'                         => ['type' => 'text'],
+                    'cover_url'                        => ['type' => 'text'],
+                    'description'                      => ['type' => 'text'],
+                    'images'                           => ['type' => 'nested', 'properties' =>[
+                        'id'                               => ['type' => 'integer'],
+                        'sort'                             => ['type' => 'integer'],
+                        'realpath'                         => ['type' => 'text'],
+                        'subpath'                          => ['type' => 'text'],
+                        'waterpath'                        => ['type' => 'text'],
+                        'timestamp'                        => ['type' => 'text'],
+                    ]]
 
                 ]
             ],
@@ -169,33 +171,79 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $command->deleteIndex(static::index(), static::type());
     }
 
-    public static function refreshIndex() {
+    public static function refreshIndex($params) {
         $res = self::deleteIndex();
         $res = self::updateMapping();
         $res = self::createIndex();
-        $connection = new \yii\db\Connection([
-            'dsn'       => 'mysql:host=localhost;dbname=pmn_svadbanaprirode',
-            'username'  => 'pmnetwork',
-            'password'  => 'P2t8wdBQbczLNnVT',
-            'charset'   => 'utf8',
-        ]);
+        $res = self::updateIndex($params);
+    }
+
+    public static function updateIndex($params) {
+        $connection = new \yii\db\Connection($params['main_connection_config']);
         $connection->open();
         Yii::$app->set('db', $connection);
-        $restaurants = Restaurants::find()
-            ->with('rooms')
-            ->where(['in_elastic' => 0, 'active' => 1])
+
+        $restaurants_types = RestaurantsTypes::find()
             ->limit(100000)
-            ->all($connection);
-        $count = 0;
+            ->asArray()
+            ->all();
+        $restaurants_types = ArrayHelper::index($restaurants_types, 'value');
+
+        $restaurants_specials = RestaurantsSpecial::find()
+            ->limit(100000)
+            ->asArray()
+            ->all();
+        $restaurants_specials = ArrayHelper::index($restaurants_specials, 'value');
+
+        $restaurants_extra = RestaurantsExtra::find()
+            ->limit(100000)
+            ->asArray()
+            ->all();
+        $restaurants_extra = ArrayHelper::index($restaurants_extra, 'value');
+
+        $restaurants_spec = RestaurantsSpec::find()
+            ->limit(100000)
+            ->asArray()
+            ->all();
+        $restaurants_spec = ArrayHelper::index($restaurants_spec, 'id');
+
+        $restaurants_location = RestaurantsLocation::find()
+            ->limit(100000)
+            ->asArray()
+            ->all();
+        $restaurants_location = ArrayHelper::index($restaurants_location, 'value');
+
+        $restaurants = Restaurants::find()
+            ->where(['city_id' => 4400])
+            ->with('rooms')
+            ->with('imagesext')
+            ->with('subdomen')
+            ->andWhere(['active' => 1])
+            ->limit(100000)
+            ->all();
+
+        $connection = new \yii\db\Connection($params['site_connection_config']);
+        $connection->open();
+        Yii::$app->set('db', $connection);
+
+        $images_module = ImagesModule::find()
+            ->limit(100000)
+            ->asArray()
+            ->all();
+        $images_module = ArrayHelper::index($images_module, 'gorko_id');
+
+        $rooms_unique_id = RoomsUniqueId::find()
+            ->limit(100000)
+            ->asArray()
+            ->all();
+        $rooms_unique_id = ArrayHelper::index($rooms_unique_id, 'id');
+
         foreach ($restaurants as $restaurant) {
             foreach ($restaurant->rooms as $room) {
-                $res = self::addRecord($room, $restaurant);
-                print_r($res);
-                echo "\n";
-                $count++;
+                $res = self::addRecord($room, $restaurant, $restaurants_types, $restaurants_spec, $restaurants_specials ,$restaurants_extra, $restaurants_location, $images_module, $rooms_unique_id, $params);
             }            
         }
-        echo 'Обновление индекса '. self::index().' '. self::type() .' завершено '.$count."\n";
+        echo 'Обновление индекса '. self::index().' '. self::type() .' завершено<br>';
     }
 
     public static function softRefreshIndex() {
@@ -215,14 +263,26 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         echo 'Обновление индекса '. self::index().' '. self::type() .' завершено<br>';
     }
 
-    public static function addRecord($room, $restaurant){
+    public static function addRecord($room, $restaurant, $restaurants_types, $restaurants_spec, $restaurants_specials ,$restaurants_extra, $restaurants_location, $images_module, $rooms_unique_id, $params){
+
+        $restaurant_spec_white_list = [1];
+        $restaurant_spec_rest = explode(',', $restaurant->restaurants_spec);
+        if (count(array_intersect($restaurant_spec_white_list, $restaurant_spec_rest)) === 0) {
+            return 'Неподходящий тип мероприятия';
+        }
+
+        $restaurant_type_white_list = [30, 11, 17, 14];
+        $restaurant_type = explode(',', $restaurant->type);
+        if (count(array_intersect($restaurant_type_white_list, $restaurant_type)) === 0) {
+            return 'Неподходящий тип площадки';
+        }
+
         $isExist = false;
-        
         try{
-            $record = self::get($room->id);
+            $record = self::get($room->gorko_id);
             if(!$record){
                 $record = new self();
-                $record->setPrimaryKey($room->id);
+                $record->setPrimaryKey($room->gorko_id);
             }
             else{
                 $isExist = true;
@@ -230,11 +290,8 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         }
         catch(\Exception $e){
             $record = new self();
-            $record->setPrimaryKey($room->id);
-        }
-
-        if(count($room->images) == 0)
-            return 0;
+            $record->setPrimaryKey($room->gorko_id);
+        }        
 
         $record->id  = $room->id;
         
@@ -287,23 +344,71 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $record->features = $room->features;
         $record->cover_url = $room->cover_url;
 
-        $images = [];
-        $thumbs = [];
-
-        foreach ($room->images as $key => $image) {
-            $image_arr = [];
-            $image_arr['id'] = $image->id;
-            $image_arr['sort'] = $image->sort;
-            $image_arr['realpath'] = $image->realpath;
-            $image_arr['subpath'] = $image->subpath;
-            $image_arr['waterpath'] = $image->waterpath;
-            $image_arr['timestamp'] = $image->timestamp;
-            array_push($images, $image_arr);
-            array_push($thumbs, $image_arr);
+        //Уникальные св-ва для залов в модуле
+        if(isset($rooms_unique_id[$room->gorko_id]) && $rooms_unique_id[$room->gorko_id]['unique_id']){
+            $record->unique_id = $rooms_unique_id[$room->gorko_id]['unique_id'];
         }
+        else{
+            $rooms_unique_id_upd = new RoomsUniqueId();
+            $new_id = RoomsUniqueId::find()->max('unique_id') + 1;
+            $rooms_unique_id_upd->unique_id = $new_id;
+            $rooms_unique_id_upd->id = $room->gorko_id;
+            $rooms_unique_id_upd->save();
+            $record->unique_id = $new_id;
+        }
+        //Картинки залов
+        $images = [];
+        $group = array();
+        foreach ($restaurant->imagesext as $value) {
+            $group[$value['room_id']][] = $value;
+        }
+        $images_sorted = array();
+        $room_ids = array();
+        foreach ($group as $room_id => $images_ext) {
+            $room_ids[] = $room_id;
+            foreach($images_ext as $image){
+                $images_sorted[$room_id][$image['event_id']][] = $image;    
+            }       
+        }
+        $specs = [1, 0];
+        $image_flag = false;
+        foreach ($specs as $spec) {
+            for ($i=0; $i < 20; $i++) {
+                if(isset($images_sorted[$room->gorko_id]) && isset($images_sorted[$room->gorko_id][$spec]) && isset($images_sorted[$room->gorko_id][$spec][$i])){
+                    $image = $images_sorted[$room->gorko_id][$spec][$i];
+                    $image_arr = [];
+                    $image_arr['id'] = $image['gorko_id'];
+                    $image_arr['sort'] = $image['sort'];
+                    $image_arr['realpath'] = $image['path'];
+                    if(isset($images_module[$image['gorko_id']])){
+                        $image_arr['subpath']   = $images_module[$image['gorko_id']]['subpath'];
+                        $image_arr['waterpath'] = $images_module[$image['gorko_id']]['waterpath'];
+                        $image_arr['timestamp'] = $images_module[$image['gorko_id']]['timestamp'];
+                    }
+                    else{
+                        $queue_id = Yii::$app->queue->push(new AsyncRenewImages([
+                            'gorko_id'      => $image['gorko_id'],
+                            'params'        => $params,
+                            'rest_flag'     => false,
+                            'rest_gorko_id' => $restaurant->gorko_id,
+                            'room_gorko_id' => $room->gorko_id,
+                            'elastic_index' => static::index(),
+                            'elastic_type'  => 'room',
+                        ]));
+                    }                
+                    array_push($images, $image_arr);
+                }
+                if(count($images) > 19){
+                    $image_flag = true;
+                    break;
+                }
+            }
+            if($image_flag) break;
+        }
+        if(count($images) == 0)
+            return "Нет картинок";
 
         $record->images = $images;
-        $record->images = $thumbs;
 
         
         try{

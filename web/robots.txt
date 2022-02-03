@@ -6,4 +6,6 @@ Disallow: *y-vody=*
 Disallow: *chek=*
 Disallow: *na-kryshe=*
 Disallow: *?keyword=*
+Disallow: *?yhid=*
+Disallow: *?from=*
 Sitemap:  https://svadbanaprirode.com/sitemap/
