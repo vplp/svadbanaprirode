@@ -116,7 +116,7 @@
                         <p class="object_parameters_item">{{item.restaurant_cuisine}} кухня</p>
                     {% endif %}
                     {% if item.restaurant_parking %}
-                        <p class="object_parameters_item">{{item.restaurant_parking}}</p>
+                        <p class="object_parameters_item">Выделенная парковка <span class="item_meta_text">на {{item.restaurant_parking}} машин</span></p>
                     {% endif %}
                     {% if item.restaurant_special %}
                         {% for special in item.restaurant_special %}

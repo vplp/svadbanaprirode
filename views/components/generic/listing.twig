@@ -1,5 +1,5 @@
 {% for item in items %}
-	<a href="/catalog/{{item.unique_id}}/" class="item swiper-slide {{type}}" data-location="{{item.restaurant_location[0].id}}">
+	<a href="/catalog/{{item.unique_id}}/" class="item swiper-slide {{type}}" data-location="{{item.restaurant_location[0].id}}" data-rat="{{item.restaurant_rating}}">
         <div class="item_img">
             <img src="{{item.images[0].subpath}}=rw" loading="lazy" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name}) | replace({"**room_name**" : item.name}) }}"/>
             {% if item.images[1] %}
@@ -10,12 +10,24 @@
             <div class="item_info_top">
                 <p class="item_name">{{item.name}}</p>
 
-                {% if type != 'other' %}
+{#                {% if type != 'other' %}#}
                     <p class="item_parent_name">{{item.restaurant_name}}</p>
                     <p class="item_address">{{item.restaurant_address}}</p>
-                {% endif %}
+{#                {% endif %}#}
                     
                 <div class="item_meta">
+
+                    {% if item.capacity %}
+                        <div class="item_meta_item">
+                            <span class="item_meta_label">Вместимость: </span><span class="item_meta_text">{{item.capacity}} чел.</span>
+                        </div>
+                    {% endif %}
+
+                    {% if item.restaurant_own_alcohol != 'Нельзя свой алкоголь' %}
+                        <div class="item_meta_item">
+                            <span class="item_meta_label">Алкоголь: </span><span class="item_meta_text">за доп. плату</span>
+                        </div>
+                    {% endif %}
 
                     {% if item.price %}
                         <div class="item_meta_item">
@@ -23,11 +35,12 @@
                         </div>
                     {% endif %}
 
-                    {% if item.capacity %}
+                    {% if item.restaurant_parking %}
                         <div class="item_meta_item">
-                            <span class="item_meta_label">Вместимость: </span><span class="item_meta_text">{{item.capacity}} чел.</span>
+                            <span class="item_meta_label">Парковка: </span><span class="item_meta_text">на {{item.restaurant_parking}} машин</span>
                         </div>
                     {% endif %}
+
                 </div>
             </div>
         </div>

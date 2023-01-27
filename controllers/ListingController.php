@@ -99,7 +99,7 @@ class ListingController extends Controller
 	public function actionListing($page, $per_page, $params_filter, $breadcrumbs, $canonical, $type = false)
 	{
 		$elastic_model = new ElasticItems;
-		$items = new ItemsFilterElastic($params_filter, $per_page, $page, false, 'rooms', $elastic_model);
+		$items = new ItemsFilterElastic($params_filter, $per_page, $page, false, 'rooms', $elastic_model, false, false, false, false, false, true);
 
 		if($page > 1){
 			$seo['text_top'] = '';
@@ -143,7 +143,7 @@ class ListingController extends Controller
 		$params = $this->parseGetQuery(json_decode($_GET['filter'], true), $this->filter_model, $this->slices_model);
 
 		$elastic_model = new ElasticItems;
-		$items = new ItemsFilterElastic($params['params_filter'], $this->per_page, $params['page'], false, 'rooms', $elastic_model);
+		$items = new ItemsFilterElastic($params['params_filter'], $this->per_page, $params['page'], false, 'rooms', $elastic_model, false, false, false, false, false, true);
 
 		$pagination = PaginationWidget::widget([
 			'total' => $items->pages,

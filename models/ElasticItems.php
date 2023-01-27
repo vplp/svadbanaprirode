@@ -42,6 +42,10 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'restaurant_phone',
             'restaurant_location',
             'restaurant_commission',
+            'restaurant_rating',
+            'restaurant_type',
+            'kotteg',
+            'baza',
             'id',
             'gorko_id',
             'restaurant_id',
@@ -103,11 +107,16 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     'restaurant_location'              => ['type' => 'nested', 'properties' =>[
                         'id'                                => ['type' => 'integer'],
                     ]],
+                    'restaurant_type'              => ['type' => 'nested', 'properties' =>[
+                        'id'                                => ['type' => 'integer'],
+                    ]],
                     'unique_id'                        => ['type' => 'integer'],
                     'restaurant_commission'            => ['type' => 'integer'],
+                    'restaurant_rating'                => ['type' => 'integer'],
+                    'kotteg'                           => ['type' => 'integer'],
+                    'baza'                             => ['type' => 'integer'],
                     'id'                               => ['type' => 'integer'],
                     'gorko_id'                         => ['type' => 'integer'],
-                    'restaurant_id'                    => ['type' => 'integer'],
                     'price'                            => ['type' => 'integer'],
                     'capacity_reception'               => ['type' => 'integer'],
                     'capacity'                         => ['type' => 'integer'],
@@ -227,7 +236,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         Yii::$app->set('db', $connection);
 
         $images_module = ImagesModule::find()
-            ->limit(100000)
+            ->limit(500000)
             ->asArray()
             ->all();
         $images_module = ArrayHelper::index($images_module, 'gorko_id');
@@ -264,6 +273,9 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
     }
 
     public static function addRecord($room, $restaurant, $restaurants_types, $restaurants_spec, $restaurants_specials ,$restaurants_extra, $restaurants_location, $images_module, $rooms_unique_id, $params){
+        if(!$restaurant->top){
+            return 'Не абонент';
+        }
 
         $restaurant_spec_white_list = [1];
         $restaurant_spec_rest = explode(',', $restaurant->restaurants_spec);
@@ -317,6 +329,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $record->restaurant_special = $restaurant->special;
         $record->restaurant_phone = $restaurant->phone;
         $record->restaurant_commission = $restaurant->commission;
+        $restaurant->rating ? $record->restaurant_rating = $restaurant->rating : $record->restaurant_rating = 90;
 
         //Тип локации
         $restaurant_location = [];
@@ -326,7 +339,23 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             $restaurant_location_arr['id'] = $value;
             array_push($restaurant_location, $restaurant_location_arr);
         }
-        $record->restaurant_location = $restaurant_location;     
+        $record->restaurant_location = $restaurant_location;
+
+
+        //Тип рест
+        $restaurant_type = [];
+        $baza = 0;
+        $kotteg = 0;
+        $restaurant_type_rest = explode(',', $restaurant->type);
+        foreach ($restaurant_type_rest as $key => $value){
+            $baza = $value == 13 ? 1 : $baza;
+            $kotteg = $value == 15 ? 1 : $kotteg;
+            $restaurant_type[]['id'] = $value;
+            $record->restaurant_type = $restaurant_type;
+        }
+        $record->restaurant_type = $restaurant_type;
+        $record->baza = $baza;
+        $record->kotteg = $kotteg;
 
         $record->id = $room->id;
         $record->gorko_id = $room->gorko_id;
@@ -379,12 +408,12 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     $image_arr = [];
                     $image_arr['id'] = $image['gorko_id'];
                     $image_arr['sort'] = $image['sort'];
-                    $image_arr['realpath'] = $image['path'];
-                    if(isset($images_module[$image['gorko_id']])){
-                        $image_arr['subpath']   = $images_module[$image['gorko_id']]['subpath'];
-                        $image_arr['waterpath'] = $images_module[$image['gorko_id']]['waterpath'];
-                        $image_arr['timestamp'] = $images_module[$image['gorko_id']]['timestamp'];
-                    }
+                    $image_arr['realpath'] = str_replace('lh3.googleusercontent.com', 'img.svadbanaprirode.com', $image['path']);;
+                        if(isset($images_module[$image['gorko_id']])){
+                            $image_arr['subpath']   = str_replace('lh3.googleusercontent.com', 'img.svadbanaprirode.com', $images_module[$image['gorko_id']]['subpath']);
+                            $image_arr['waterpath'] = str_replace('lh3.googleusercontent.com', 'img.svadbanaprirode.com', $images_module[$image['gorko_id']]['waterpath']);
+                            $image_arr['timestamp'] = str_replace('lh3.googleusercontent.com', 'img.svadbanaprirode.com', $images_module[$image['gorko_id']]['timestamp']);
+                        }
                     else{
                         $queue_id = Yii::$app->queue->push(new AsyncRenewImages([
                             'gorko_id'      => $image['gorko_id'],

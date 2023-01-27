@@ -1,4 +1,5 @@
 <?php
+
 namespace app\modules\svadbanaprirode\controllers;
 
 use Yii;
@@ -21,20 +22,21 @@ class ItemController extends Controller
 	{
 		$elastic_model = new ElasticItems;
 		$item = $elastic_model::find()
-		->query(['bool' => ['must' => ['match'=>['unique_id' => $id]]]])
-		->limit(1)
-		->search();
+			->query(['bool' => ['must' => ['match' => ['unique_id' => $id]]]])
+			->limit(1)
+			->search();
 
-		if(!isset($item['hits']['hits'][0]))
+		if (!isset($item['hits']['hits'][0]))
 			throw new \yii\web\NotFoundHttpException();
 
-		$item = $item['hits']['hits'][0];		
+		$item = $item['hits']['hits'][0];
+
 
 		$seo = new Seo('item', 1, 0, $item);
 		$seo = $seo->seo;
-        $this->setSeo($seo);
+		$this->setSeo($seo);
 
-        $seo['h1'] = $item->name;
+		$seo['h1'] = $item->name;
 		$seo['breadcrumbs'] = Breadcrumbs::get_breadcrumbs(2);
 		$seo['address'] = $item->restaurant_address;
 		$seo['desc'] = $item->restaurant_name;
@@ -47,6 +49,10 @@ class ItemController extends Controller
 		$other_rooms = $itemsWidget->getOther($item->restaurant_id, $id, $elastic_model);
 		$similar_rooms = $itemsWidget->getSimilar($item, 'rooms', $elastic_model);
 
+//		echo '<pre>';
+//		print_r($item);
+//		die();
+
 		return $this->render('index.twig', array(
 			'item' => $item,
 			'queue_id' => $id,
@@ -56,10 +62,10 @@ class ItemController extends Controller
 		));
 	}
 
-	private function setSeo($seo){
-        $this->view->title = $seo['title'];
-        $this->view->params['desc'] = $seo['description'];
-        $this->view->params['kw'] = $seo['keywords'];
-    }
-
+	private function setSeo($seo)
+	{
+		$this->view->title = $seo['title'];
+		$this->view->params['desc'] = $seo['description'];
+		$this->view->params['kw'] = $seo['keywords'];
+	}
 }

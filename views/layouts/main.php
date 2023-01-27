@@ -19,6 +19,9 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
     <link rel="icon" type="image/x-icon" href="/img/svadbanaprirode.ico">
     <title><?php echo $this->title ?></title>
     <?php $this->head() ?>
+    <?php if(Yii::$app->params['noindex_global'] === true){
+        echo '<meta name="robots" content="noindex" />';
+    } ?>
     <?php if (isset($this->params['desc']) and !empty($this->params['desc'])) echo "<meta name='description' content='".$this->params['desc']."'>";?>
     <?php if (isset($this->params['canonical']) and !empty($this->params['canonical'])) echo "<link rel='canonical' href='".$this->params['canonical']."'>";?>
     <?php if (isset($this->params['kw']) and !empty($this->params['kw'])) echo "<meta name='keywords' content='".$this->params['kw']."'>";?>
@@ -46,7 +49,7 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
                     </div>
                 </div>
                 <div class="header_phone">
-                    <a href="tel:+79252382671"><p>7-925-238-26-71</p></a>
+                    <a href="tel:<?=Yii::$app->params['subdomen_phone']?>"><p><?=Yii::$app->params['subdomen_phone_pretty']?></p></a>
                     <div class="header_phone_button" data-open-popup-form>
                         <p class="_link">Подберите мне зал для свадьбы</p>
                     </div>
@@ -77,7 +80,7 @@ frontend\modules\svadbanaprirode\assets\AppAsset::register($this);
                     </div>
                     <div class="footer_block _right">
                         <div class="footer_phone">
-                            <a href="tel:+79252382671"><p>Тел.: 7-925-238-26-71</p></a>
+                            <a href="tel:<?=Yii::$app->params['subdomen_phone']?>"><p><?=Yii::$app->params['subdomen_phone_pretty']?></p></a>
                         </div>
                         <div class="footer_phone_button" data-open-popup-form>
                             <p class="_link">Подберите мне зал для свадьбы</p>
