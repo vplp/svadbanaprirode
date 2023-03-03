@@ -9,6 +9,12 @@
         display: flex;
         flex-wrap: wrap;
 
+        //justify-content: center;
+
+        .listing_widget_link {
+            min-height: 360px;
+        }
+
         em{
             background: rgba(122,207,207,0.35);
             border-radius: 3px;

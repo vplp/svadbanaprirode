@@ -4,7 +4,7 @@ namespace app\modules\svadbanaprirode\controllers;
 use Yii;
 use yii\web\Controller;
 use common\controllers\ApiController as BaseApiController;
-use common\models\api\MapAll;
+use frontend\modules\svadbanaprirode\models\MapAll;
 use frontend\modules\svadbanaprirode\models\ElasticItems;
 use common\models\Filter;
 use common\models\Slices;
@@ -19,11 +19,12 @@ class ApiController extends BaseApiController
 
 	public function actionMapall()
 	{
-		$filter_model = Filter::find()->with('items')->where(['active' => 1])->orderBy(['sort' => SORT_ASC])->all();
+        $subdomain = Yii::$app->params['subdomen'];
+        $filter_model = Filter::find()->with('items')->where(['active' => 1])->orderBy(['sort' => SORT_ASC])->all();
 		$slices_model = Slices::find()->all();
 		$elastic_model = new ElasticItems;
 		$params = $this->parseGetQuery(json_decode($_POST['filter'], true), $filter_model, $slices_model);
-		$map_all = new MapAll($elastic_model, false, $params['params_filter'], 'rooms', '/catalog/');
+		$map_all = new MapAll($elastic_model, false, $params['params_filter'], 'rooms', "/{$subdomain}");
 
 		//echo '<pre>';
 		//print_r($map_all->coords);

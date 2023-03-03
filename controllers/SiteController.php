@@ -8,6 +8,7 @@ use yii\web\Controller;
 use frontend\modules\svadbanaprirode\models\ElasticItems;
 use common\widgets\FilterWidget;
 use common\models\elastic\ItemsWidgetElastic;
+use common\models\elastic\ItemsFilterElastic;
 use common\models\Seo;
 use common\models\Filter;
 use common\models\Slices;
@@ -25,13 +26,17 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-       //$rooms_mod = RoomsModule::find()->all();
+        //$rooms_mod = RoomsModule::find()->all();
        //foreach ($rooms_mod as $key => $value) {
        //    $room_uid = new RoomsUniqueId();
        //    $room_uid->id = $value->id;
        //    $room_uid->unique_id = $value->unique_id;
        //    $room_uid->save();
        //}
+
+//        echo '<pre>';
+//        print_r($properties);
+//        die();
 
         $elastic_model = new ElasticItems;
 
@@ -40,6 +45,8 @@ class SiteController extends Controller
 
         $itemsWidget = new ItemsWidgetElastic;
         $apiMain = $itemsWidget->getMain($filter_model, $slices_model, 'rooms', $elastic_model);
+        $items = new ItemsFilterElastic([], 1, 1, false, 'rooms', $elastic_model, false, false, false, false, false, true);
+        $apiMain['total'] = $items->total;
 
         $seo = new Seo('index', 1, $apiMain['total']);
         $this->setSeo($seo->seo);

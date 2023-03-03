@@ -366,6 +366,7 @@
 
         .form_block{
             margin-top: 0px;
+            align-items: flex-start;
         }
 
         .input_wrapper{
@@ -373,7 +374,7 @@
         }
 
         .object_book_email_button{
-            width: calc(40% - 8px);
+            //width: calc(40% - 8px);
             line-height: 40px;
             text-align: center;
         }

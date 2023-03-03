@@ -6,6 +6,7 @@ import * as Lightbox from '../../../node_modules/lightbox2/dist/js/lightbox.js';
 export default class Item {
 	constructor($item) {
 		var self = this;
+		this.subdomen = $('[data-city-block]');
 		self.mobileMode = self.getScrollWidth() < 768 ? true : false;
 		console.log(self.mobileMode);
 
@@ -101,7 +102,7 @@ export default class Item {
 
 		$.ajax({
 			type: 'post',
-			url: '/ajax/send-calltracking/',
+			url: '/'+this.subdomen.data('alias')+'ajax/send-calltracking/',
 			data: data,
 			processData: false,
 			contentType: false,

@@ -8,10 +8,12 @@
         <div class="object_head">
 
             <div class="object_meta">
-                <div class="object_meta_item">
-                    <p class="object_meta_title">Банкетное меню</p>
-                    <p class="object_meta_value">от <span class="rur">{{item.price}} <span class="norur">руб.</span></span></p>
-                </div>
+                {% if item.price %}
+                    <div class="object_meta_item">
+                        <p class="object_meta_title">Банкетное меню</p>
+                        <p class="object_meta_value">от <span class="rur">{{item.price}} <span class="norur">руб.</span></span></p>
+                    </div>
+                {% endif %}
                 <div class="object_meta_block">
                     <div class="object_meta_item">
                         <p class="object_meta_title">Вместимость на банкет:</p>
@@ -68,7 +70,7 @@
                             <div class="form_inputs">
                                 <div class="input_wrapper">
                                     <input type="email" name="book_email" data-book-email-id="{{item.id}}">
-                                    <input type="hidden" name="room_id" value="{{item.id}}">
+                                    <input type="hidden" name="room_id" value="{{item.unique_id}}">
                                 </div>
                             </div>
                             <input type="submit" class="object_book_email_button _button" value="Отправить"/>

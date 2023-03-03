@@ -22,6 +22,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'restaurant_id',
             'restaurant_gorko_id',
             'restaurant_price',
+            'restaurant_city_id',
             'restaurant_min_capacity',
             'restaurant_max_capacity',
             'restaurant_district',
@@ -53,6 +54,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'capacity_reception',
             'capacity',
             'type',
+            'city_id',
             'rent_only',
             'banquet_price',
             'bright_room',
@@ -63,12 +65,13 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'cover_url',
             'images',
             'unique_id',
-            'description'
+            'description',
+            'outside_registration',
         ];
     }
 
     public static function index() {
-        return 'pmn_sp_rooms';
+        return 'pmn_sp_dev_rooms';
     }
     
     public static function type() {
@@ -92,6 +95,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     'restaurant_parent_district'       => ['type' => 'integer'],
                     'restaurant_alcohol'               => ['type' => 'integer'],
                     'restaurant_firework'              => ['type' => 'integer'],
+                    'restaurant_city_id'               => ['type' => 'integer'],
                     'restaurant_name'                  => ['type' => 'text'],
                     'restaurant_address'               => ['type' => 'text'],
                     'restaurant_cover_url'             => ['type' => 'text'],
@@ -124,7 +128,9 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     'rent_only'                        => ['type' => 'integer'],
                     'banquet_price'                    => ['type' => 'integer'],
                     'bright_room'                      => ['type' => 'integer'],
+                    'city_id'                          => ['type' => 'integer'],
                     'separate_entrance'                => ['type' => 'integer'],
+                    'outside_registration'             => ['type' => 'integer'],
                     'type_name'                        => ['type' => 'text'],
                     'name'                             => ['type' => 'text'],
                     'features'                         => ['type' => 'text'],
@@ -223,7 +229,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $restaurants_location = ArrayHelper::index($restaurants_location, 'value');
 
         $restaurants = Restaurants::find()
-            ->where(['city_id' => 4400])
+//            ->where(['city_id' => 4400])
             ->with('rooms')
             ->with('imagesext')
             ->with('subdomen')
@@ -328,8 +334,17 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $record->restaurant_payment = $restaurant->payment;
         $record->restaurant_special = $restaurant->special;
         $record->restaurant_phone = $restaurant->phone;
+        $record->restaurant_city_id = $restaurant->city_id;
+        $record->city_id = $restaurant->city_id;
         $record->restaurant_commission = $restaurant->commission;
         $restaurant->rating ? $record->restaurant_rating = $restaurant->rating : $record->restaurant_rating = 90;
+
+        $record->outside_registration = 0;
+        $restaurant_special_rest = explode(',', $restaurant->special_ids);
+        foreach ($restaurant_special_rest as $key => $value) {
+            if ($value == '41')
+                $record->outside_registration = 1;
+        }
 
         //Тип локации
         $restaurant_location = [];

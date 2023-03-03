@@ -57,7 +57,7 @@
                 {% if item.restaurant_commission %}
                     <p class="object_book_action">Забронируй {{item.name}} и получи приятный подарок!</p>
                 {% endif %}
-                <a href="/catalog/{{item.unique_id}}/"><div class="object_book_button _button" data-book-button>Посмотреть зал</div></a>
+                <a href="/{{ app.params.subdomen }}{{item.unique_id}}/"><div class="object_book_button _button" data-book-button>Посмотреть зал</div></a>
             </div>
 
 </div>

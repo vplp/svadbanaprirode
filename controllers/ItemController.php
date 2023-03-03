@@ -12,7 +12,7 @@ use common\models\Rooms;
 use common\models\Seo;
 use app\modules\svadbanaprirode\models\ItemSpecials;
 use frontend\modules\svadbanaprirode\models\ElasticItems;
-use common\components\Breadcrumbs;
+use frontend\components\Breadcrumbs;
 use common\models\elastic\ItemsWidgetElastic;
 
 class ItemController extends Controller
@@ -20,6 +20,10 @@ class ItemController extends Controller
 
 	public function actionIndex($id)
 	{
+//	    echo '<pre>';
+//	    echo $id;
+//	    die();
+
 		$elastic_model = new ElasticItems;
 		$item = $elastic_model::find()
 			->query(['bool' => ['must' => ['match' => ['unique_id' => $id]]]])

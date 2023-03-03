@@ -1,5 +1,5 @@
 {% for item in items %}
-	<a href="/catalog/{{item.unique_id}}/" class="item swiper-slide {{type}}" data-location="{{item.restaurant_location[0].id}}" data-rat="{{item.restaurant_rating}}">
+	<a href="/{{ app.params.subdomen }}catalog/{{item.unique_id}}/" class="item swiper-slide {{type}}" data-location="{{item.restaurant_location[0].id}}" data-rat="{{item.restaurant_rating}}">
         <div class="item_img">
             <img src="{{item.images[0].subpath}}=rw" loading="lazy" alt="{{img_alt | replace({"**room**" : item.name}) | replace({"**restaurant**" : item.restaurant_name}) | replace({"**room_name**" : item.name}) }}"/>
             {% if item.images[1] %}
@@ -12,7 +12,7 @@
 
 {#                {% if type != 'other' %}#}
                     <p class="item_parent_name">{{item.restaurant_name}}</p>
-                    <p class="item_address">{{item.restaurant_address}}</p>
+                    <p class="item_address">{{item.restaurant_address | replace({'МО': 'Московская область', 'Москва, МО': 'Московская область'}) }}</p>
 {#                {% endif %}#}
                     
                 <div class="item_meta">

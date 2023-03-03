@@ -29,8 +29,30 @@ class StaticController extends Controller
 
 	public function actionRobots()
 	{
-		return 'User-agent: *
-Sitemap:  https://svadbanaprirode.com/sitemap/  ';
+        header('Content-type: text/plain');
+		return "
+User-agent: *
+Disallow: *district_code=*
+Disallow: *gostey=*
+Disallow: *area_type=*
+Disallow: *y-vody=*
+Disallow: *chek=*
+Disallow: *na-kryshe=*
+Disallow: *?keyword=*
+Disallow: *?yhid=*
+Disallow: *?from=*
+Disallow: /samara/
+Disallow: /kazan/
+Disallow: /spb/
+Disallow: /chelyabinsk/
+Disallow: /ekaterinburg/
+Disallow: /krasnodar/
+Disallow: /ufa/
+Disallow: /rostov/
+Disallow: /nn/
+Sitemap:  https://svadbanaprirode.com/sitemap/		
+		";
+		exit;
 	}
 
 	private function setSeo($seo){

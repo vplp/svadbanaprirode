@@ -53,5 +53,33 @@ window.$ = $;
 	    	form.push(new Form($(this)))
 	    });
 
-  	});
+		//КЛИК ПО ВЫБОРУ ГОРОДА
+		if ($(window).width()>= 1440) {
+			$('.city_choose_select').on('click', function(e){
+				$('.all_cities').toggleClass('hidden');
+				$('.header_wrap_back').toggleClass('hidden');
+			});
+
+			$('.header_wrap_back').on('click', function(e){
+				console.log('back');
+				$('.all_cities').addClass('hidden');
+				$('.header_wrap_back').addClass('hidden');
+			});
+		} else {
+			$('.city_choose_select').on('click', function(e){
+				$('.header_menu_mobile_under').toggleClass('hidden');
+				$('body').toggleClass('overflow_hidden');
+			});
+			$('.under_cities_back').on('click', function(e) {
+				$('.header_menu_mobile_under').toggleClass('hidden');
+				$('body').toggleClass('overflow_hidden');
+			});
+		}
+
+		window.addEventListener('scroll', () => {
+			$('.all_cities').addClass('hidden');
+			$('.header_wrap_back').addClass('hidden');
+		});
+
+	});
 })($);

@@ -12,37 +12,37 @@ export default class YaMap {
 		console.log(this.filter);
 
 		window.addEventListener('click', () => {
-		    if (fired === false) {
-		        fired = true;
-	        	load_other();
+			if (fired === false) {
+				fired = true;
+				load_other();
 			}
 		}, {passive: true});
- 
+
 		window.addEventListener('scroll', () => {
-		    if (fired === false) {
-		        fired = true;
-	        	load_other();
+			if (fired === false) {
+				fired = true;
+				load_other();
 			}
 		}, {passive: true});
 
 		window.addEventListener('mousemove', () => {
-	    	if (fired === false) {
-	        	fired = true;
-	        	load_other();
+			if (fired === false) {
+				fired = true;
+				load_other();
 			}
 		}, {passive: true});
 
 		window.addEventListener('touchmove', () => {
-	    	if (fired === false) {
-	        	fired = true;
-	        	load_other();
+			if (fired === false) {
+				fired = true;
+				load_other();
 			}
 		}, {passive: true});
 
 		function load_other() {
 			setTimeout(function() {
 				self.init();
-			}, 100);	
+			}, 100);
 		}
 	}
 
@@ -84,7 +84,7 @@ export default class YaMap {
 
 		$.ajax({
 			type: "POST",
-			url: "/api/map_all/",
+			url: "/"+self.filter.subdomen.data('alias')+"api/map_all/",
 			data: data,
 			success: function (response) {
 				let serverData = response;
@@ -139,48 +139,48 @@ export default class YaMap {
                             $[[options.contentLayout]]
                         </div>
                     </div>`, {
-					build: function () {
-						this.constructor.superclass.build.call(this);
+						build: function () {
+							this.constructor.superclass.build.call(this);
 
-						this._$element = $('.balloon_layout', this.getParentElement());
+							this._$element = $('.balloon_layout', this.getParentElement());
 
-						this._$element.find('.close')
-							.on('click', $.proxy(this.onCloseClick, this));
+							this._$element.find('.close')
+								.on('click', $.proxy(this.onCloseClick, this));
 
-					},
+						},
 
-					clear: function () {
-						this._$element.find('.close')
-							.off('click');
+						clear: function () {
+							this._$element.find('.close')
+								.off('click');
 
-						this.constructor.superclass.clear.call(this);
-					},
+							this.constructor.superclass.clear.call(this);
+						},
 
-					onCloseClick: function (e) {
-						e.preventDefault();
+						onCloseClick: function (e) {
+							e.preventDefault();
 
-						this.events.fire('userclose');
-					},
+							this.events.fire('userclose');
+						},
 
-					getShape: function () {
-						if (!this._isElement(this._$element)) {
-							return self.myBalloonLayout.superclass.getShape.call(this);
+						getShape: function () {
+							if (!this._isElement(this._$element)) {
+								return self.myBalloonLayout.superclass.getShape.call(this);
+							}
+
+							var position = this._$element.position();
+
+							return new ymaps.shape.Rectangle(new ymaps.geometry.pixel.Rectangle([
+								[position.left, position.top], [
+									position.left + this._$element[0].offsetWidth,
+									position.top + this._$element[0].offsetHeight + this._$element.find('.arrow')[0].offsetHeight
+								]
+							]));
+						},
+
+						_isElement: function (element) {
+							return element && element[0] && element.find('.arrow')[0];
 						}
-
-						var position = this._$element.position();
-
-						return new ymaps.shape.Rectangle(new ymaps.geometry.pixel.Rectangle([
-							[position.left, position.top], [
-								position.left + this._$element[0].offsetWidth,
-								position.top + this._$element[0].offsetHeight + this._$element.find('.arrow')[0].offsetHeight
-							]
-						]));
-					},
-
-					_isElement: function (element) {
-						return element && element[0] && element.find('.arrow')[0];
 					}
-				}
 				);
 
 				self.myBalloonContentLayout = ymaps.templateLayoutFactory.createClass(
@@ -205,7 +205,7 @@ export default class YaMap {
                         </div>
 
                         <div class="balloon_link">
-                            <button class="balloon_link_button _button"><a href="{{properties.link_unique}}">Посмотреть зал</a></button>
+                            <button class="balloon_link_button _button"><a href="{{properties.link_unique}}">Посмотреть зал</a></button> 
                         </div>
                         
                     </div>`
@@ -233,7 +233,7 @@ export default class YaMap {
 
 				$.ajax({
 					type: "POST",
-					url: "/api/map_all/",
+					url: "/"+self.filter.subdomen.data('alias')+"api/map_all/",
 					data: data,
 					success: function (response) {
 						serverData = response;

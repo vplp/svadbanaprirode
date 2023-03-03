@@ -40,9 +40,9 @@
 			<div class="items_list_listing swiper-container" data-listing-wrapper>
 				<div class="items_list swiper-wrapper" data-listing-list>
 					{{ this.render('//components/generic/listing.twig', {'items':widget.items, 'img_alt': widget.img_alt}) | raw }}
-					<a href="/catalog/{{widget.slice.alias}}/" class="item listing_widget_link swiper-slide">
+					<a href="/{{ app.params.subdomen }}catalog/{{widget.slice.alias}}" class="item listing_widget_link swiper-slide">
 						<div class="listing_widget_link_img"></div>
-						<div class="listing_widget_link_text">{{widget.link_text}}</div>
+						<div class="listing_widget_link_text">{{widget.link_text }}</div>
 						<div class="listing_widget_link_arrow"></div>
 					</a>
 				</div>
@@ -53,7 +53,7 @@
 				</div>					
 			</div>
 
-			<a href="/catalog/{{widget.slice.alias}}/" class="main_widget_link _button">
+			<a href="/{{ app.params.subdomen }}catalog/{{widget.slice.alias}}/" class="main_widget_link _button">
 				{{widget.link_text}}
 			</a>
 

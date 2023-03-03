@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\svadbanaprirode\controllers;
 
+use http\Exception;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
@@ -37,12 +38,20 @@ class ListingController extends Controller
 	    return parent::beforeAction($action);
 	}
 
-	public function actionSlice($slice)
+	public function actionSlice($city = '', $slice)
 	{
+//	    if (Yii::$app->params['subdomen_alias'] !== $city)
+//            throw new \yii\web\NotFoundHttpException();
+
+//        echo '<pre>';
+//        print_r($_GET);
+
 		$slice_obj = new QueryFromSlice($slice);
+
 		if($slice_obj->flag){
 			$this->view->params['menu'] = $slice;
 			$params = $this->parseGetQuery($slice_obj->params, $this->filter_model, $this->slices_model);
+
 			isset($_GET['page']) ? $params['page'] = $_GET['page'] : $params['page'];
 
 			$canonical = $_SERVER['REQUEST_SCHEME'] .'://'. $_SERVER['HTTP_HOST'] . explode('?', $_SERVER['REQUEST_URI'], 2)[0];
@@ -60,11 +69,11 @@ class ListingController extends Controller
 			);
 		}
 		else{
-			return $this->goHome();
-		}				
+            throw new \yii\web\NotFoundHttpException();
+		}
 	}
 
-	public function actionIndex()
+	public function actionIndex($city = '')
 	{
 		$getQuery = $_GET;
 		unset($getQuery['q']);
@@ -98,8 +107,13 @@ class ListingController extends Controller
 
 	public function actionListing($page, $per_page, $params_filter, $breadcrumbs, $canonical, $type = false)
 	{
+
 		$elastic_model = new ElasticItems;
 		$items = new ItemsFilterElastic($params_filter, $per_page, $page, false, 'rooms', $elastic_model, false, false, false, false, false, true);
+
+//        echo '<pre>';
+//        print_r($items);
+//        die();
 
 		if($page > 1){
 			$seo['text_top'] = '';
@@ -129,6 +143,10 @@ class ListingController extends Controller
 		//echo '<pre style="display:none;">';
 		//print_r($items->query);
 		//echo '</pre>';
+
+//        echo '<pre>';
+//        print_r( $items->items);
+//        die();
 
 		return $this->render('index.twig', array(
 			'items' => $items->items,

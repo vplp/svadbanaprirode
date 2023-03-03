@@ -9,6 +9,7 @@ export default class Listing{
 		this.filter = new Filter($('[data-filter-wrapper]'));
 		this.yaMap = new YaMapAll(this.filter);		
 
+
 		//КЛИК ПО КНОПКЕ "ПОДОБРАТЬ"
 		$('[data-filter-button]').on('click', function(){
 			self.reloadListing();
@@ -39,7 +40,7 @@ export default class Listing{
 				document.title = response.seo_title;
 				self.block.removeClass('_loading');
 				$('html,body').animate({scrollTop:0}, 400);
-				history.pushState({}, '', '/catalog/'+response.url);
+				history.pushState({}, '', '/'+this.filter.subdomen.data('alias')+'catalog/'+response.url);
 				this.yaMap.refresh(this.filter);
 			}
 		);

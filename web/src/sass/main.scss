@@ -220,6 +220,22 @@ h3{
     font-weight: bold;
 }
 
+.overflow_hidden {
+    overflow: hidden !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.active_city {
+    font-weight: 700;
+}
+
+.active_city_mobile {
+    color: $clrGreen !important;
+}
+
 ._link{
     color: $clrGreen;
     border-bottom: 1px solid $clrLinkBorder;

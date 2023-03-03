@@ -3,6 +3,7 @@
 export default class Filter{
 	constructor($filter){
 		let self = this;
+		this.subdomen = $('[data-city-block]');
 		this.$filter = $filter;
 		this.state = {};
 
@@ -11,7 +12,7 @@ export default class Filter{
 		//КЛИК ПО БЛОКУ С СЕЛЕКТОМ
 		this.$filter.find('[data-filter-select-current]').on('click', function(){
 			let $parent = $(this).closest('[data-filter-select-block]');
-			self.selectBlockClick($parent);	
+			self.selectBlockClick($parent);
 		});
 
 		//КЛИК ПО СТРОКЕ В СЕЛЕКТЕ
@@ -44,19 +45,19 @@ export default class Filter{
 
 		//КЛИК ВНЕ БЛОКА С СЕЛЕКТОМ
 		$('body').click(function(e) {
-		    if (!$(e.target).closest('.filter_select_block').length){
-		    	self.selectBlockActiveClose();
-		    }
+			if (!$(e.target).closest('.filter_select_block').length){
+				self.selectBlockActiveClose();
+			}
 		});
 
 		var observer = new IntersectionObserver(function(entries) {
 			console.log(entries[0].intersectionRatio);
-		  	if (entries[0].intersectionRatio === 0)
-		    	document.querySelector(".filter_mobile_wrapper").classList.add("_sticky");
-		  	else if (entries[0].intersectionRatio === 1)
-		    	document.querySelector(".filter_mobile_wrapper").classList.remove("_sticky");
+			if (entries[0].intersectionRatio === 0)
+				document.querySelector(".filter_mobile_wrapper").classList.add("_sticky");
+			else if (entries[0].intersectionRatio === 1)
+				document.querySelector(".filter_mobile_wrapper").classList.remove("_sticky");
 		}, {
-		  	threshold: [0, 1]
+			threshold: [0, 1]
 		});
 
 		observer.observe(document.querySelector(".filter_mobile_flag"));
@@ -89,20 +90,20 @@ export default class Filter{
 		this.promise = new Promise(function(resolve, reject) {
 			self.reject = reject;
 			self.resolve = resolve;
-	    });		
+		});
 
 		$.ajax({
-            type: 'get',
-            url: '/ajax/filter/',
-            data: data,
-            success: function(response) {
-            	response = $.parseJSON(response);
-                self.resolve(response);
-            },
-            error: function(response) {
+			type: 'get',
+			url: '/'+self.subdomen.data('alias')+'ajax/filter/',
+			data: data,
+			success: function(response) {
+				response = $.parseJSON(response);
+				self.resolve(response);
+			},
+			error: function(response) {
 
-            }
-        });
+			}
+		});
 	}
 
 	filterMainSubmit(){
@@ -114,26 +115,26 @@ export default class Filter{
 		this.promise = new Promise(function(resolve, reject) {
 			self.reject = reject;
 			self.resolve = resolve;
-	    });
+		});
 
 		$.ajax({
-            type: 'get',
-            url: '/ajax/filter-main/',
-            data: data,
-            success: function(response) {
-            	if(response){
-            		//console.log(response);
-            		self.resolve('/catalog/'+response);
-            	}
-            	else{
-            		//console.log(response);
-            		self.resolve(self.filterListingHref());
-            	}
-            },
-            error: function(response) {
+			type: 'get',
+			url: '/'+self.subdomen.data('alias')+'ajax/filter-main/',
+			data: data,
+			success: function(response) {
+				if(response){
+					//console.log(response);
+					self.resolve('/'+self.subdomen.data('alias')+'catalog/'+response);
+				}
+				else{
+					//console.log(response);
+					self.resolve(self.filterListingHref());
+				}
+			},
+			error: function(response) {
 
-            }
-        });
+			}
+		});
 	}
 
 	selectBlockClick($block){
@@ -141,7 +142,7 @@ export default class Filter{
 			this.selectBlockClose($block);
 		}
 		else{
-			this.selectBlockOpen($block);			
+			this.selectBlockOpen($block);
 		}
 	}
 
@@ -162,7 +163,7 @@ export default class Filter{
 
 	selectStateRefresh($block){
 		let self = this;
-		let blockType = $block.data('type');		
+		let blockType = $block.data('type');
 		let $items = $block.find('[data-filter-select-item]._active');
 		let selectText = '-';
 
@@ -198,14 +199,14 @@ export default class Filter{
 
 	filterListingHref(){
 		if(Object.keys(this.state).length > 0){
-			var href = '/catalog/?';
+			var href ='/'+ this.subdomen.data('alias')+'catalog/?';
 			$.each(this.state, function(key, value){
 				href += '&' + key + '=' + value;
 			});
 		}
-		else{
-			var href = '/catalog/';
-		}			
+		else {
+			var href = '/'+this.subdomen.data('alias')+'catalog/';
+		}
 
 		return href;
 	}

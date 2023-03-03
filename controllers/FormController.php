@@ -7,6 +7,7 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\helpers\Html;
 use common\components\GorkoLeadApi;
+use frontend\modules\svadbanaprirode\models\ElasticItems;
 
 class FormController extends Controller
 {
@@ -48,6 +49,64 @@ class FormController extends Controller
 
         $payload['event_type'] = "Wedding";
         $payload['city_id'] = 4400;
+
+        $resp = GorkoLeadApi::send_lead('v.gorko.ru', 'svadbanaprirode', $payload);
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $resp;
+    }
+
+    public function actionRoom() {
+        $elastic_model = new ElasticItems;
+        $item = $elastic_model::find()
+            ->query(['bool' => ['must' => ['match'=>['unique_id' => $_POST['room_id']]]]])
+            ->limit(1)
+            ->search();
+
+        $item = $item['hits']['hits'][0];
+
+//        echo '<pre>';
+//        print_r($item);
+
+        $to   = $_POST['book_email'];
+        $from = Yii::$app->params['senderEmail'];
+        $sub = 'Информация о месте для свадьбы - '.$item['restaurant_name'];
+
+        $msg  = $this->renderPartial('//emails/roominfo.twig', array(
+//            'url' => Yii::$app->params['subdomen_alias'] ? 'https://'.Yii::$app->params['subdomen_alias'].'.svadbanaprirode_dev.com/catalog/'.$_POST['room_id'].'/'  : 'http://svadbanaprirode_dev.com/catalog/'.$_POST['room_id'].'/',
+            'url' => 'http://svadbanaprirode_dev.com/'.$item['unique_id'].'/',
+            'item' => $item,
+//            'link' => Yii::$app->params['subdomen_alias'] ? 'https://'.Yii::$app->params['subdomen_alias'].'.svadbanaprirode_dev.com' : 'http://svadbanaprirode_dev.com'
+        ));
+
+        if (isset($_POST['book_email'])) {
+            $message  = Yii::$app->mailer->compose()
+                ->setFrom($from)
+                ->setTo($to)
+                ->setSubject($sub)
+                ->setCharset('utf-8')
+                ->setHtmlBody($msg.'.');
+
+            if (count($_FILES) > 0) {
+                foreach ($_FILES['files']['tmp_name'] as $k => $v) {
+                    $message->attach($v, ['fileName' => $_FILES['files']['name'][$k]]);
+                }
+            }
+
+            $message->send();
+        }
+
+        $payload = [];
+        $payload['details'] = '';
+
+        if(isset($_POST['type']))
+            $payload['details'] .= ' Клиент сделал заявку на конкретный зал - '.$_POST['url'];
+        if(isset($_POST['url']))
+            $payload['details'] .= 'Заявка отправлена с '.$_POST['url'];
+        if (isset($_POST['room_id']))
+            $payload['room_id'] = $_POST['room_id'];
+        if (isset($_POST['book_email']))
+            $payload['email'] = $_POST['book_email'];
 
         $resp = GorkoLeadApi::send_lead('v.gorko.ru', 'svadbanaprirode', $payload);
 

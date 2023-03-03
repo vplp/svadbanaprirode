@@ -192,6 +192,8 @@ export default class Form {
 		    break;
 
 		  case 'book':
+		  	ym(64598434,'reachGoal','zayaka_pochta');
+		  	gtag('event', 'form');
 		    $('.object_book_email._form').removeClass('_form').addClass('_success');
 		    break;
 		}
@@ -226,6 +228,8 @@ export default class Form {
 	    for (var pair of formData.entries()) {
 		    console.log(pair[0]+ ', ' + pair[1]); 
 		}
+
+	    console.log('self.to', self.to); 
 
 	    $.ajax({
             beforeSend: function() {

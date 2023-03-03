@@ -66,6 +66,8 @@ export default class Main {
 			$('.header_menu').toggleClass('_active');
 			$('.header_burger').toggleClass('_active');
 			$('header').toggleClass('_active');
+			$('.header_menu_mobile_under').addClass('hidden');
+			$('body').removeClass('overflow_hidden');
 		});
 
 		var fired = false;
