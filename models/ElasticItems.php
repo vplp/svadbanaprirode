@@ -67,6 +67,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             'unique_id',
             'description',
             'outside_registration',
+            'restaurant_rev_ya',
         ];
     }
 
@@ -136,6 +137,11 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
                     'features'                         => ['type' => 'text'],
                     'cover_url'                        => ['type' => 'text'],
                     'description'                      => ['type' => 'text'],
+                    'restaurant_rev_ya'             => ['type' => 'nested', 'properties' => [
+                        'id'                            => ['type' => 'long'],
+                        'rate'                          => ['type' => 'text'],
+                        'count'                         => ['type' => 'text'],
+                    ]],
                     'images'                           => ['type' => 'nested', 'properties' =>[
                         'id'                               => ['type' => 'integer'],
                         'sort'                             => ['type' => 'integer'],
@@ -229,11 +235,11 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
         $restaurants_location = ArrayHelper::index($restaurants_location, 'value');
 
         $restaurants = Restaurants::find()
-//            ->where(['city_id' => 4400])
             ->with('rooms')
             ->with('imagesext')
             ->with('subdomen')
-            ->andWhere(['active' => 1])
+            ->with('yandexReview')
+            ->where(['active' => 1])
             ->limit(100000)
             ->all();
 
@@ -345,6 +351,15 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
             if ($value == '41')
                 $record->outside_registration = 1;
         }
+
+        //Отзывы с Яндекса из общей базы
+        $reviews = [];
+        if (isset($restaurant->yandexReview)) {
+            $reviews['id'] = $restaurant->yandexReview['rev_ya_id'];
+            $reviews['rate'] = $restaurant->yandexReview['rev_ya_rate'];
+            $reviews['count'] = $restaurant->yandexReview['rev_ya_count'];
+        }
+        $record->restaurant_rev_ya = $reviews;
 
         //Тип локации
         $restaurant_location = [];

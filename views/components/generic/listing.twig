@@ -13,7 +13,49 @@
 {#                {% if type != 'other' %}#}
                     <p class="item_parent_name">{{item.restaurant_name}}</p>
                     <p class="item_address">{{item.restaurant_address | replace({'МО': 'Московская область', 'Москва, МО': 'Московская область'}) }}</p>
+                    <div class="item_about_main">
+                        <div class="item_capacity_wrap">
+                            <span>Вместимость: </span>
+                            {% if item.restaurant_max_capacity and item.restaurant_max_capacity %}
+                                {% if item.restaurant_max_capacity ==  item.restaurant_min_capacity %}
+                                    {{ item.restaurant_min_capacity }}
+                                {% else %}
+                                    {{ item.restaurant_min_capacity }} - {{ item.restaurant_max_capacity }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="item_comment_wrap">
+                            {% if item.restaurant_rev_ya.id and item.restaurant_rev_ya.rate %}
+                                <div class="rate">
+                                    <div class="stars">
+                                        <div class="stars__empty"></div>
+                                        <div class="stars__fill" style="width:calc({{item.restaurant_rev_ya.rate}} * 20%)"></div>
+                                    </div>
+                                    <p class="rate__count">{{item.restaurant_rev_ya.rate}}</p>
+                                    <p class="rate__reviews">({{item.restaurant_rev_ya.count}})</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
 {#                {% endif %}#}
+
+{#                <div class="item_arenda">#}
+{#                    <div class="item_arenda_banket">#}
+{#                        <span class="item_arenda_banket_title">Аренда с банкетом</span>#}
+{#                        <div class="item_arenda_banket_info">#}
+{#                            <div class="item_arenda_banket_zal">#}
+{#                                Зал: <span>бесплатно</span>#}
+{#                            </div>#}
+{#                            <div class="item_arenda_banket_banket">#}
+{#                                Банкет: <span>от 4 000 ₽/чел.</span>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+
+{#                    <div class="item_arenda_food">#}
+{#                        <span class="item_arenda_food_title">Аренда без еды</span>#}
+{#                    </div>#}
+{#                </div>#}
                     
                 <div class="item_meta">
 

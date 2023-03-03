@@ -50,7 +50,7 @@ header{
 
             @include for-mobile{
                 left: 15px;
-                display: none;
+                //display: none; 
             }
 
             .header_logo_img{
@@ -82,11 +82,14 @@ header{
                 font-size: 10px;
                 width: 174px;
                 display: inline-block;
-                white-space: nowrap;
                 color: #3C8323;
-                //color: red; 
-                text-transform: uppercase;
                 letter-spacing: 2px;
+                text-transform: uppercase; 
+                white-space: nowrap;
+
+                @include for-mobile {
+                    display: none;
+                }
             }
 
             &:hover .header_logo_img{
