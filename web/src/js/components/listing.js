@@ -18,6 +18,7 @@ export default class Listing{
 		//КЛИК ПО ПАГИНАЦИИ
 		$('body').on('click', '[data-pagination-wrapper] [data-listing-pagitem]', function(){
 			self.reloadListing($(this).data('page-id'));
+			$('body').removeClass('overflow_hidden'); 
 		});
 		console.log(this);
 	}

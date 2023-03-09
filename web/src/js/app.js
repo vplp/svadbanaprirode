@@ -8,7 +8,7 @@ import Widget from './components/widget';
 import Form from './components/form';
 import YaMap from './components/mapSingleObject';
 import Errorpage from './components/error';
-import Post from './components/post';
+import Post from './components/post'; 
 
 window.$ = $;
 

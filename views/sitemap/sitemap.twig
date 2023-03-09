@@ -8,9 +8,11 @@
         </url>
 
         {% for slice in slices %}
-        	<url>
-	            <loc>{{host}}/catalog/{{slice.alias}}/</loc>
-	        </url>
+            {% if (slice.alias != 'za-gorodom' and slice.alias != 'v-gorode') %}
+        	    <url>
+	                <loc>{{host}}/catalog/{{slice.alias}}/</loc>
+	            </url>
+            {% endif %}
         {% endfor %}
 
         <url>

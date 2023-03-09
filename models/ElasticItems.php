@@ -72,7 +72,7 @@ class ElasticItems extends \yii\elasticsearch\ActiveRecord
     }
 
     public static function index() {
-        return 'pmn_sp_dev_rooms';
+        return 'pmn_sp_rooms';
     }
     
     public static function type() {

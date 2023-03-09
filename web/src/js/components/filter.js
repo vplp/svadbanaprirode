@@ -31,11 +31,13 @@ export default class Filter{
 		//ОТКРЫТЬ МОБИЛЬНЫЙ ФИЛЬТР
 		$('body').find('[data-filter-open]').on('click', (e) => {
 			this.$filter.addClass('_active');
+			$('body').addClass('overflow_hidden');
 		});
 
 		//ЗАКРЫТЬ МОБИЛЬНЫЙ ФИЛЬТР
 		this.$filter.find('[data-filter-close]').on('click', (e) => {
 			this.$filter.removeClass('_active');
+			$('body').removeClass('overflow_hidden');
 		});
 		this.$filter.on('click', function(e){
 			if(!$(e.target).hasClass('filter_mobile_button') && !$(e.target).hasClass('filter_wrapper') && !$(e.target).closest('.filter_wrapper').length)
@@ -77,6 +79,7 @@ export default class Filter{
 
 	filterClose(){
 		this.$filter.removeClass('_active');
+		$('body').toggleClass('overflow_hidden');
 	}
 
 	filterListingSubmit(page = 1){
