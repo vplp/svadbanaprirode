@@ -61,6 +61,8 @@
 		top: -175px;
 		left: 0px;
 		margin: 0px;
+		opacity: 1;
+		transition: opacity 1.5s ease;
 		@include for-mobile{
 			top: -67px;
 		}
@@ -89,6 +91,8 @@
 			top: 0px;
 			left: 0px;
 		}
+
+
 	}
 	&._loaded{
 		height: 150px;
@@ -297,5 +301,20 @@
 				line-height: 22px;
 			}
 		}
+	}
+}
+
+
+.map_container:not(._active){
+	.ymaps-2-1-79-placemark-overlay.ymaps-2-1-79-user-selection-none{
+		display: none;
+	}
+
+
+}
+
+._lazy{
+	.map{
+		opacity: 0;
 	}
 }

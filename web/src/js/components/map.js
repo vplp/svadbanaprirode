@@ -107,7 +107,9 @@ export default class YaMap {
 					self.myMap.geoObjects.removeAll();
 					$('.map_container').addClass('_loaded').removeClass('_active');
 				}
+				$('.map_container').removeClass('_lazy');
 				$('[data-show-map]').on('click', function () {
+					console.log('data-show-map');
 					ym(64598434, 'reachGoal', 'map_open');
 					$(this).closest('.map_container').removeClass('_loaded').addClass('_active');
 					self.myMap.geoObjects.removeAll();
@@ -238,11 +240,12 @@ export default class YaMap {
 					success: function (response) {
 						serverData = response;
 						self.objectManager.add(serverData);
+						self.myMap.geoObjects.add(self.objectManager);
+						self.myMap.setBounds(self.objectManager.getBounds());
+						$('.map_container').removeClass('_lazy');
 						$('[data-show-map]').on('click', function () {
 							ym(64598434, 'reachGoal', 'map_open');
 							$(this).closest('.map_container').addClass('_active');
-							self.myMap.geoObjects.add(self.objectManager);
-							self.myMap.setBounds(self.objectManager.getBounds());
 						});
 					},
 					error: function (response) {
